@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="TextAppearance.Inter.Heading1" parent="TextAppearance.MaterialComponents.Headline1">
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:lineSpacingExtra">4sp</item>
+        <item name="android:lineSpacingMultiplier">1</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.Inter.Heading2" parent="TextAppearance.MaterialComponents.Headline2">
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:lineSpacingMultiplier">1.3</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.Inter.Button" parent="TextAppearance.MaterialComponents.Button">
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:lineSpacingMultiplier">1.3</item>
+    </style>
+
+    <style name="TextAppearance.Inter.Body1" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="fontFamily">@font/inter</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:lineSpacingMultiplier">1.3</item>
+    </style>
+
+</resources>

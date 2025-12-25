@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Summa</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="lista_de_compras">Lista de Compras</string>
+    <string name="item">Item</string>
+    <string name="quantidade">Quantidade</string>
+    <string name="sabonete">Sabonete</string>
+    <string name="total">Total:</string>
+    <string name="valor">Valor</string>
+    <string name="preencha_o_nome_do_item">Preencha o nome do Item</string>
+    <string name="arroz">Arroz</string>
+    <string name="todas_listas">Todas Listas</string>
+    <string name="item_removido">Item removido</string>
+    <string name="desfazer">DESFAZER</string>
+</resources>

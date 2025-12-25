@@ -1,0 +1,48 @@
+package com.omna.summa.ui.shoppingList
+
+import android.os.Bundle
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.omna.summa.R
+import com.omna.summa.databinding.FragmentAllShoppingListBinding
+import com.omna.summa.databinding.FragmentShoppingListBinding
+import com.omna.summa.domain.model.ShoppingList
+
+class AllShoppingListFragment : Fragment() {
+    private var _binding: FragmentAllShoppingListBinding? = null
+    private val binding get() = _binding!!
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentAllShoppingListBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val itemAdapter = AllShoppingItemAdapter(mutableListOf())
+
+        with(binding.rvItem){
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = itemAdapter
+        }
+
+        binding.btnAdd.setOnClickListener {
+            itemAdapter.addItem(ShoppingList())
+
+            findNavController().navigate(R.id.action_allShoppingListFragment_to_shoppingListFragment)
+        }
+    }
+}
