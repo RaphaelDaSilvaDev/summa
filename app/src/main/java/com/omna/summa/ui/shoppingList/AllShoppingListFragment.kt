@@ -5,16 +5,21 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.omna.summa.R
 import com.omna.summa.databinding.FragmentAllShoppingListBinding
-import com.omna.summa.databinding.FragmentShoppingListBinding
-import com.omna.summa.domain.model.ShoppingList
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class AllShoppingListFragment : Fragment() {
     private var _binding: FragmentAllShoppingListBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: AllShoppingListViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,17 +37,31 @@ class AllShoppingListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val itemAdapter = AllShoppingItemAdapter(mutableListOf())
+        val itemAdapter = AllShoppingListAdapter(mutableListOf(), onItemClick = { list ->
+            viewModel.selectList(list.id)
+            val action = AllShoppingListFragmentDirections
+                .actionAllShoppingListFragmentToShoppingListFragment(listId = list.id)
+            findNavController().navigate(action)
+        })
 
         with(binding.rvItem){
             layoutManager = LinearLayoutManager(requireContext())
             adapter = itemAdapter
         }
 
-        binding.btnAdd.setOnClickListener {
-            itemAdapter.addItem(ShoppingList())
+        lifecycleScope.launch {
+            viewModel.lists.collect { lists ->
+                itemAdapter.updateItems(lists)
+            }
+        }
 
-            findNavController().navigate(R.id.action_allShoppingListFragment_to_shoppingListFragment)
+        binding.btnAdd.setOnClickListener {
+            viewModel.addList{ listId ->
+                viewModel.selectList(listId)
+                val action = AllShoppingListFragmentDirections
+                    .actionAllShoppingListFragmentToShoppingListFragment(listId = listId)
+                findNavController().navigate(action)
+            }
         }
     }
 }

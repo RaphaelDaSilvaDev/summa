@@ -7,9 +7,14 @@
 
     <fragment
         android:id="@+id/shoppingListFragment"
-        android:name="com.omna.summa.ui.shoppingList.ShoppingListFragment"
+        android:name="com.omna.summa.ui.shoppingItem.ShoppingItemFragment"
         android:label="fragment_shopping_list"
-        tools:layout="@layout/fragment_shopping_list" />
+        tools:layout="@layout/fragment_shopping_list">
+        <argument
+            android:name="listId"
+            app:argType="long"
+            android:defaultValue="0L" />
+    </fragment>
     <fragment
         android:id="@+id/allShoppingListFragment"
         android:name="com.omna.summa.ui.shoppingList.AllShoppingListFragment"

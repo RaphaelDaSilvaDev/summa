@@ -1,7 +1,8 @@
-package com.omna.summa.ui.shoppingList
+package com.omna.summa.ui.shoppingItem
 
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.core.widget.addTextChangedListener
@@ -9,12 +10,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.omna.summa.databinding.ItemShoppingBinding
 import com.omna.summa.domain.model.ShoppingItem
 
-class ItemAdapter(
+class ShoppingItemAdapter(
     private val items: MutableList<ShoppingItem>,
     private val unitAdapter: ArrayAdapter<String>,
     private val dropdownBackground: Drawable?,
-    private val onItemsChanged: (List<ShoppingItem>) -> Unit
-) : RecyclerView.Adapter<ItemAdapter.ViewHolder>() {
+    private val onAmountChanged: () -> Unit,
+    private val onItemChanged: (ShoppingItem) -> Unit
+) : RecyclerView.Adapter<ShoppingItemAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -40,38 +42,41 @@ class ItemAdapter(
 
         fun bind(item: ShoppingItem) =
             with(binding) {
-                edtAmount.setText(item.quantity.toString())
-                slcUnit.setText(item.unit)
                 etName.setText(item.name)
-
-                if (item.unitPrice != null) {
-                    etValor.setText(item.unitPrice.toString())
-                    tvTotal.text = "R$ %.2f".format(item.totalPrice())
-                    onItemsChanged(items)
-                } else {
-                    tvTotal.text = "-"
-                }
+                edtAmount.setText(item.quantity.toString())
+                slcUnit.setText(item.unit, false)
+                etValor.setText(item.unitPrice?.toString() ?: "")
+                tvTotal.text = if (item.unitPrice != null) "R$ %.2f".format(item.totalPrice()) else "-"
 
                 edtAmount.setSelectAllOnFocus(true)
+                etValor.setSelectAllOnFocus(true)
+
+                val focusListener = View.OnFocusChangeListener { _, hasFocus ->
+                    if (!hasFocus) {
+                        val updatedItem = item.copy(
+                            name = etName.text.toString(),
+                            quantity = edtAmount.text.toString().toIntOrNull() ?: 0,
+                            unit = slcUnit.text.toString(),
+                            unitPrice = etValor.text.toString().replace(",", ".").toDoubleOrNull()
+                        )
+                        onItemChanged(updatedItem)
+                    }
+                }
+
+                etName.onFocusChangeListener = focusListener
+                edtAmount.onFocusChangeListener = focusListener
+                etValor.onFocusChangeListener = focusListener
 
                 edtAmount.addTextChangedListener { text ->
                     item.quantity = text.toString().toIntOrNull() ?: 0
                     tvTotal.text = "R$ %.2f".format(item.totalPrice())
-                    onItemsChanged(items)
+                    onAmountChanged()
                 }
-
-                etValor.setSelectAllOnFocus(true)
 
                 etValor.addTextChangedListener { text ->
-                    item.unitPrice = text.toString().toDoubleOrNull()
+                    item.unitPrice = text.toString().replace(",", ".").toDoubleOrNull()
                     tvTotal.text = "R$ %.2f".format(item.totalPrice())
-                    onItemsChanged(items)
-                }
-
-                etName.setOnFocusChangeListener { _, hasFocus ->
-                    if (!hasFocus && !etName.text.isNullOrEmpty()) {
-                        item.name = etName.text.toString()
-                    }
+                    onAmountChanged()
                 }
 
                 with(slcUnit) {
@@ -88,23 +93,12 @@ class ItemAdapter(
             }
     }
 
+    fun getItemByPositon(position: Int): ShoppingItem = items[position]
 
-    fun addItem(item: ShoppingItem) {
-        items.add(item)
-        notifyItemInserted(items.size - 1)
+    fun updateItems(newItems: List<ShoppingItem>) {
+        items.clear()
+        items.addAll(newItems)
+        notifyDataSetChanged()
     }
-
-    fun removeItem(position: Int): ShoppingItem {
-        val removed = items.removeAt(position)
-        notifyItemRemoved(position)
-        return removed
-    }
-
-    fun restoreItem(item: ShoppingItem, position: Int) {
-        items.add(position, item)
-        notifyItemInserted(position)
-    }
-
-    fun getItems(): List<ShoppingItem> = items
 
 }

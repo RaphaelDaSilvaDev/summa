@@ -1,17 +1,17 @@
-package com.omna.summa.ui.shoppingList
+package com.omna.summa.ui.shoppingItem
 
 import android.graphics.Canvas
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.ArrayAdapter
-import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,11 +20,16 @@ import com.google.android.material.snackbar.Snackbar
 import com.omna.summa.R
 import com.omna.summa.databinding.FragmentShoppingListBinding
 import com.omna.summa.domain.model.ShoppingItem
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
-class ShoppingListFragment : Fragment() {
+@AndroidEntryPoint
+class ShoppingItemFragment : Fragment() {
 
     private var _binding: FragmentShoppingListBinding? = null
     private val binding get() = _binding!!
+
+    private val viewModel: ShoppingItemViewModel by viewModels()
 
     val units = listOf("un", "kg", "L")
 
@@ -44,9 +49,13 @@ class ShoppingListFragment : Fragment() {
 
         val dropdownBg = ContextCompat.getDrawable(requireContext(), R.drawable.bg_edit_text)
 
-        val itemAdapter = ItemAdapter(mutableListOf(), menuUnitAdapter, dropdownBg) { items ->
-            updateTotal(items)
-        }
+        val itemAdapter = ShoppingItemAdapter(mutableListOf(), menuUnitAdapter, dropdownBg, onAmountChanged = {
+            val currentItems = viewModel.items.value
+            updateTotal(currentItems)
+        }, onItemChanged = {
+                item ->
+            viewModel.updateItem(item)
+        })
 
         with(binding.rvItem) {
             layoutManager = LinearLayoutManager(requireContext())
@@ -58,6 +67,14 @@ class ShoppingListFragment : Fragment() {
             setOnClickListener {
                 setDropDownBackgroundDrawable(dropdownBg)
                 showDropDown()
+            }
+        }
+
+        lifecycleScope.launch {
+            viewModel.items.collect { items ->
+                updateTotal(items)
+
+                itemAdapter.updateItems(items)
             }
         }
 
@@ -75,14 +92,12 @@ class ShoppingListFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            itemAdapter.addItem(
-                ShoppingItem(
-                    name = itemName,
-                    quantity = itemQuantity,
-                    unit = itemUnit,
-                    unitPrice = 0.0
-                )
-            )
+            viewModel.insertItem(ShoppingItem(
+                name = itemName,
+                quantity = itemQuantity,
+                unit = itemUnit,
+                unitPrice = 0.0
+            ))
 
             binding.etItem.setText("")
             binding.edtAmount.setText("")
@@ -104,16 +119,15 @@ class ShoppingListFragment : Fragment() {
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.bindingAdapterPosition
 
-                if(position == RecyclerView.NO_POSITION) return
+                if (position == RecyclerView.NO_POSITION) return
 
-                val removedItem = itemAdapter.removeItem(position)
+                val removedItem = itemAdapter.getItemByPositon(position)
 
-                updateTotal(itemAdapter.getItems())
+                viewModel.deleteItem(removedItem)
 
                 Snackbar.make(binding.root, getString(R.string.item_removido), Snackbar.LENGTH_LONG)
                     .setAction(getString(R.string.desfazer)) {
-                        itemAdapter.restoreItem(removedItem, position)
-                        updateTotal(itemAdapter.getItems())
+                        viewModel.insertItem(removedItem)
                     }
                     .setActionTextColor(ContextCompat.getColor(requireContext(), R.color.red))
                     .show()
@@ -129,14 +143,20 @@ class ShoppingListFragment : Fragment() {
                 isCurrentlyActive: Boolean
             ) {
                 val deleteIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_trash)
-                val background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_swipe_delete)
+                val background =
+                    ContextCompat.getDrawable(requireContext(), R.drawable.bg_swipe_delete)
                 val itemView = viewHolder.itemView
 
-                background?.setBounds(itemView.right + dX.toInt(), itemView.top, itemView.right, itemView.bottom)
+                background?.setBounds(
+                    itemView.right + dX.toInt(),
+                    itemView.top,
+                    itemView.right,
+                    itemView.bottom
+                )
 
                 background?.draw(c)
 
-                deleteIcon?.let{
+                deleteIcon?.let {
                     val iconMargin = (itemView.height - it.intrinsicHeight) / 2
                     val iconTop = itemView.top + iconMargin
                     val iconLef = itemView.right - iconMargin - it.intrinsicWidth
@@ -147,7 +167,15 @@ class ShoppingListFragment : Fragment() {
                     it.draw(c)
                 }
 
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                super.onChildDraw(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
             }
         })
 
