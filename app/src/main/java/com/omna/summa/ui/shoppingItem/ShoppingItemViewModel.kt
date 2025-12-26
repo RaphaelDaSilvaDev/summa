@@ -9,6 +9,7 @@ import com.omna.summa.data.local.mapper.toEntry
 import com.omna.summa.data.repository.ShoppingItemRepository
 import com.omna.summa.domain.model.ShoppingItem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -32,14 +33,16 @@ class ShoppingItemViewModel @Inject constructor(
     private fun loadItems(){
         viewModelScope.launch {
             repository.getItemsByList(listId).collect { entities ->
-                _items.value = entities.map { it.toDomain() }.toList()
+                _items.value = entities.map { it.toDomain() }
             }
         }
     }
 
     fun updateItem(item: ShoppingItem){
-        viewModelScope.launch {
-            repository.insetItem(item.toEntry(listId))
+        viewModelScope.launch(Dispatchers.IO) {
+            if(repository.exists(item.id)){
+                repository.updateItem(item.toEntry(listId))
+            }
         }
     }
 

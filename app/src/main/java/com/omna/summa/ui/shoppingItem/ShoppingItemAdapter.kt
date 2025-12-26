@@ -4,6 +4,7 @@ import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
@@ -71,6 +72,14 @@ class ShoppingItemAdapter(
                     item.quantity = text.toString().toIntOrNull() ?: 0
                     tvTotal.text = "R$ %.2f".format(item.totalPrice())
                     onAmountChanged()
+                }
+
+                edtAmount.setOnEditorActionListener { v, actionId, event ->
+                    if(actionId == EditorInfo.IME_ACTION_NEXT){
+                        etValor.requestFocus()
+                        etValor.selectAll()
+                        true
+                    }else false
                 }
 
                 etValor.addTextChangedListener { text ->

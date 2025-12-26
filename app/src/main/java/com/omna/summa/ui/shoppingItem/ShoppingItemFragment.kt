@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -78,6 +79,21 @@ class ShoppingItemFragment : Fragment() {
             }
         }
 
+        binding.etItem.setOnEditorActionListener { _, actionId, _ ->
+            if(actionId == EditorInfo.IME_ACTION_NEXT){
+                binding.edtAmount.requestFocus()
+                true
+            }else false
+        }
+
+        binding.edtAmount.setOnEditorActionListener { _, actionId, _ ->
+            if(actionId == EditorInfo.IME_ACTION_DONE){
+                binding.btnAdd.performClick()
+                binding.etItem.requestFocus()
+                true
+            }else false
+        }
+
         binding.btnAdd.setOnClickListener {
             val itemName = binding.etItem.text.toString()
             val itemQuantity = binding.edtAmount.text.toString().toIntOrNull() ?: 0
@@ -121,7 +137,7 @@ class ShoppingItemFragment : Fragment() {
 
                 if (position == RecyclerView.NO_POSITION) return
 
-                val removedItem = itemAdapter.getItemByPositon(position)
+                val removedItem = itemAdapter.getItemByPositon(position).copy()
 
                 viewModel.deleteItem(removedItem)
 

@@ -12,10 +12,10 @@ fun ShoppingItemEntity.toDomain(): ShoppingItem = ShoppingItem(
 )
 
 fun ShoppingItem.toEntry(listId: Long): ShoppingItemEntity = ShoppingItemEntity(
-    id = this.id,
+    id = id,
     listId = listId,
-    name = this.name,
-    quantity = this.quantity,
-    unit = this.unit,
-    unitPrice = this.unitPrice
+    name = name,
+    quantity = quantity,
+    unit = unit,
+    unitPrice = unitPrice
 )
