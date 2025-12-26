@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="24dp"
+    android:background="@color/gray900"
+    android:orientation="vertical"
+    >
+
+    <TextView
+        android:id="@+id/tvListName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:labelFor="@+id/etListName"
+        android:text="@string/nome_da_lista" />
+
+    <EditText
+        android:id="@+id/etListName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_edit_text"
+        android:inputType="text"
+        android:textColor="@color/gray100"
+        android:textColorHint="@color/gray300"
+        android:imeOptions="actionDone"
+        android:hint="@string/compra_do_mes"
+        android:padding="12dp" />
+
+</LinearLayout>

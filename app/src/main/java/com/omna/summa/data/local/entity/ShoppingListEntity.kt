@@ -8,5 +8,6 @@ import java.time.LocalDate
 data class ShoppingListEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
+    val name: String,
     val createdAt: LocalDate = LocalDate.now()
 )

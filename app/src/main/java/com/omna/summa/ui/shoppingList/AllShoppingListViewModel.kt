@@ -4,14 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.omna.summa.data.local.entity.ShoppingListEntity
 import com.omna.summa.data.local.mapper.toDomain
+import com.omna.summa.data.local.mapper.toEntry
 import com.omna.summa.data.local.relation.ShoppingListWithItems
 import com.omna.summa.data.repository.ShoppingListRepository
 import com.omna.summa.domain.model.ShoppingList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -43,10 +42,9 @@ class AllShoppingListViewModel @Inject constructor(private val repository: Shopp
         }
     }
 
-    fun addList(onResult: (Long) -> Unit){
+    fun addList(item: ShoppingList, onResult: (Long) -> Unit){
         viewModelScope.launch {
-            val item = ShoppingListEntity()
-            val generatedId = repository.insertList(item)
+            val generatedId = repository.insertList(item.toEntry())
             onResult(generatedId)
         }
     }

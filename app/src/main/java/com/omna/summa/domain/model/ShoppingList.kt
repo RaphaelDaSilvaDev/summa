@@ -3,8 +3,9 @@ package com.omna.summa.domain.model
 import java.time.LocalDate
 
 data class ShoppingList(
-    val id: Long,
-    val items: List<ShoppingItem>,
+    val id: Long = 0,
+    val name: String,
+    val items: List<ShoppingItem> = emptyList(),
     val createdAt: LocalDate = LocalDate.now()
 ){
     val itemCount: Int

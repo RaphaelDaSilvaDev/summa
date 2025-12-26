@@ -14,6 +14,7 @@ navigationUiKtx = "2.8.1"
 room = "2.8.4"
 javaxInject = "1"
 daggerHilt = "2.57.1"
+toolsDesugar = "2.0.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -31,6 +32,7 @@ androidx-room-compiler = { group = "androidx.room", name = "room-compiler", vers
 javax-inject = { group = "javax.inject", name = "javax.inject", version.ref = "javaxInject" }
 dagger-hilt = { group = "com.google.dagger", name = "hilt-android", version.ref = "daggerHilt" }
 dagger-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "daggerHilt" }
+tools-desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "toolsDesugar" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

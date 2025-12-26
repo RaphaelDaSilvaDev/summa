@@ -62,11 +62,11 @@
                 android:id="@+id/tvItem"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:labelFor="@+id/etItem"
+                android:labelFor="@+id/etListName"
                 android:text="@string/item" />
 
             <EditText
-                android:id="@+id/etItem"
+                android:id="@+id/etListName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"

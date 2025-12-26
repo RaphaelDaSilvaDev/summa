@@ -4,7 +4,6 @@ import androidx.room.Embedded
 import androidx.room.Relation
 import com.omna.summa.data.local.entity.ShoppingItemEntity
 import com.omna.summa.data.local.entity.ShoppingListEntity
-import java.time.LocalDate
 
 data class ShoppingListWithItems(
     @Embedded

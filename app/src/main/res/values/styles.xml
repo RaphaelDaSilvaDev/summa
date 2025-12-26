@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ThemeOverlay.Summa.MaterialDialog"
+        parent="ThemeOverlay.Material3.MaterialAlertDialog">
+        <item name="colorPrimary">@color/gray100</item>
+    </style>
+</resources>

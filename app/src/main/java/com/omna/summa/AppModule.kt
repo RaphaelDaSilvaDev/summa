@@ -2,9 +2,10 @@ package com.omna.summa
 
 import android.app.Application
 import androidx.room.Room
-import com.omna.summa.data.local.AppDatabase
+import com.omna.summa.data.local.database.AppDatabase
 import com.omna.summa.data.local.dao.ShoppingItemDao
 import com.omna.summa.data.local.dao.ShoppingListDao
+import com.omna.summa.data.local.database.migrations.MIGRATION_1_2
 import com.omna.summa.data.repository.ShoppingItemRepository
 import com.omna.summa.data.repository.ShoppingListRepository
 import dagger.Module
@@ -19,7 +20,12 @@ class AppModule {
     @Provides
     @Singleton
     fun provideeDatabase(app: Application): AppDatabase {
-        return Room.databaseBuilder(app, AppDatabase::class.java, "summa_db").build()
+        return Room.databaseBuilder(
+            app,
+            AppDatabase::class.java,
+            "summa_db")
+            .addMigrations(MIGRATION_1_2)
+            .build()
     }
 
     @Provides

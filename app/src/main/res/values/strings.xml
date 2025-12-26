@@ -13,4 +13,10 @@
     <string name="todas_listas">Todas Listas</string>
     <string name="item_removido">Item removido</string>
     <string name="desfazer">DESFAZER</string>
+    <string name="compra_do_mes">Compra do mês</string>
+    <string name="nome_da_lista">Nome da Lista</string>
+    <string name="criar_lista">Criar lista</string>
+    <string name="criar">Criar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="informe_o_nome_da_lista">Informe o nome da lista</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.omna.summa.data.local
+package com.omna.summa.data.local.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
@@ -11,8 +11,8 @@ import com.omna.summa.data.local.entity.ShoppingListEntity
 
 @Database(
     entities = [ShoppingListEntity::class, ShoppingItemEntity::class],
-    version = 1,
-    exportSchema = false
+    version = 2,
+    exportSchema = false,
 )
 @TypeConverters(Converters::class)
 abstract class AppDatabase : RoomDatabase() {

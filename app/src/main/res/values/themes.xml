@@ -2,6 +2,7 @@
     <!-- Base application theme. -->
     <style name="Base.Theme.Summa" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:textColor">@color/gray100</item>
+        <item name="colorSurfaceContainerHigh">@color/gray900</item>
     </style>
 
     <style name="Theme.Summa" parent="Base.Theme.Summa" />

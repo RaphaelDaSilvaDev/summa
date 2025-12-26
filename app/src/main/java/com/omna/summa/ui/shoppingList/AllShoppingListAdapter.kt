@@ -38,6 +38,7 @@ class AllShoppingListAdapter(
             with(binding) {
                 val totalItems = item.items.size
                 val completedItems = item.items.count { item -> item.unitPrice != null && item.unitPrice!! > 0 && item.quantity > 0}
+                tvName.text = item.name
                 tvTotal.text = item.totalPrice.toString()
                 tvTagAmount.text = "${completedItems}/${totalItems}"
                 tvDate.text = item.createdAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))

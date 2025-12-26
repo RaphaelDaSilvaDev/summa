@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -26,6 +27,8 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ShoppingItemFragment : Fragment() {
+
+    private val args: ShoppingItemFragmentArgs by navArgs()
 
     private var _binding: FragmentShoppingListBinding? = null
     private val binding get() = _binding!!
@@ -44,6 +47,10 @@ class ShoppingItemFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val listName = args.listName
+
+        binding.tvPageName.text = if(!listName.isNullOrEmpty()) listName else getString(R.string.lista_de_compras)
 
         val menuUnitAdapter =
             ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, units)
@@ -79,7 +86,7 @@ class ShoppingItemFragment : Fragment() {
             }
         }
 
-        binding.etItem.setOnEditorActionListener { _, actionId, _ ->
+        binding.etListName.setOnEditorActionListener { _, actionId, _ ->
             if(actionId == EditorInfo.IME_ACTION_NEXT){
                 binding.edtAmount.requestFocus()
                 true
@@ -89,13 +96,13 @@ class ShoppingItemFragment : Fragment() {
         binding.edtAmount.setOnEditorActionListener { _, actionId, _ ->
             if(actionId == EditorInfo.IME_ACTION_DONE){
                 binding.btnAdd.performClick()
-                binding.etItem.requestFocus()
+                binding.etListName.requestFocus()
                 true
             }else false
         }
 
         binding.btnAdd.setOnClickListener {
-            val itemName = binding.etItem.text.toString()
+            val itemName = binding.etListName.text.toString()
             val itemQuantity = binding.edtAmount.text.toString().toIntOrNull() ?: 0
             val itemUnit = binding.slcUnit.text.toString()
 
@@ -115,7 +122,7 @@ class ShoppingItemFragment : Fragment() {
                 unitPrice = 0.0
             ))
 
-            binding.etItem.setText("")
+            binding.etListName.setText("")
             binding.edtAmount.setText("")
             binding.slcUnit.setText(menuUnitAdapter.getItem(0), false)
         }
