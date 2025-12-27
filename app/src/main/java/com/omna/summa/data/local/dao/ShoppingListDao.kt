@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import com.omna.summa.data.local.entity.ShoppingListEntity
 import com.omna.summa.data.local.relation.ShoppingListWithItems
 import kotlinx.coroutines.flow.Flow
@@ -24,4 +25,7 @@ interface ShoppingListDao {
     @Transaction
     @Query("SELECT * FROM shopping_lists WHERE id = :listId")
     suspend fun getListWithItems(listId: Long): ShoppingListWithItems?
+
+    @Update
+    suspend fun updateList(list: ShoppingListEntity)
 }

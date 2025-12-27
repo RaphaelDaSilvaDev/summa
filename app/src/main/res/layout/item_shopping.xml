@@ -9,147 +9,155 @@
     android:padding="12dp"
     android:layout_marginBottom="12dp">
 
-    <LinearLayout
-        android:id="@+id/llQuantity"
+    <EditText
+        android:id="@+id/etName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:background="@null"
+        android:ellipsize="end"
+        android:inputType="text"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.Inter.Heading2"
+        android:textColor="@color/gray100"
+        android:textSize="18dp"
+        app:layout_constraintBottom_toTopOf="@+id/llQuantity"
 
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/sabonete" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintWidth="3"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/etName">
+
+        <LinearLayout
+            android:id="@+id/llQuantity"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:orientation="vertical">
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+
+                android:background="@drawable/bg_quantity_unity">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edtAmount"
+                    android:layout_width="48dp"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:hint="Qtd"
+                    android:imeOptions="actionNext"
+                    android:inputType="numberDecimal"
+                    android:padding="8dp"
+                    android:textAlignment="center"
+                    android:textColor="@color/gray100"
+                    android:textColorHint="@color/gray200"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/divider"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <View
+                    android:id="@+id/divider"
+                    android:layout_width="1dp"
+                    android:layout_height="24dp"
+                    android:background="@color/gray300"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/edtAmount"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/slcUnit"
+                    android:layout_width="60dp"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:drawableEnd="@drawable/ic_chevron_down"
+                    android:drawableTint="@color/gray200"
+                    android:inputType="none"
+                    android:padding="8dp"
+                    android:text="un"
+                    android:textColor="@color/gray100"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/divider"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llTotal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/constraintLayout"
+            app:layout_constraintStart_toEndOf="@+id/llQuantity"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/tvQuantity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/total" />
+
+            <TextView
+                android:id="@+id/tvTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="R$ 7,00"
+                android:textAppearance="@style/TextAppearance.Inter.Heading2"
+                android:textColor="@color/green" />
+        </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="wrap_content"
+            android:id="@+id/constraintLayout"
+            android:layout_width="96dp"
             android:layout_height="48dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_quantity_unity"
+            android:padding="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-            android:background="@drawable/bg_quantity_unity">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edtAmount"
-                android:layout_width="48dp"
-                android:layout_height="match_parent"
-                android:background="@null"
-                android:textAlignment="center"
-                android:hint="Qtd"
-                android:inputType="number"
-                android:imeOptions="actionNext"
-                android:padding="8dp"
-                android:textColor="@color/gray100"
-                android:textColorHint="@color/gray200"
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="R$"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/divider"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <View
-                android:id="@+id/divider"
-                android:layout_width="1dp"
-                android:layout_height="24dp"
-                android:background="@color/gray300"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/edtAmount"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                android:id="@+id/slcUnit"
-                android:layout_width="60dp"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etValor"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_marginStart="8dp"
                 android:background="@null"
-                android:drawableEnd="@drawable/ic_chevron_down"
-                android:drawableTint="@color/gray200"
-                android:inputType="none"
-                android:padding="8dp"
-                android:text="un"
+                android:hint="@string/valor"
+                android:inputType="numberDecimal"
                 android:textColor="@color/gray100"
+                android:textColorHint="@color/gray200"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/divider"
+                app:layout_constraintStart_toEndOf="@+id/textView"
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </LinearLayout>
-
-
-    <EditText
-        android:id="@+id/etName"
-        android:layout_width="96dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:background="@null"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:inputType="text"
-        android:textColor="@color/gray100"
-        android:textAppearance="@style/TextAppearance.Inter.Heading2"
-        android:textSize="18dp"
-        app:layout_constraintEnd_toStartOf="@+id/constraintLayout"
-        app:layout_constraintStart_toEndOf="@+id/llQuantity"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/sabonete"/>
-
-
-    <LinearLayout
-        android:id="@+id/llTotal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/constraintLayout"
-        app:layout_constraintStart_toEndOf="@+id/llQuantity"
-        app:layout_constraintTop_toBottomOf="@+id/etName">
-
-        <TextView
-            android:id="@+id/tvQuantity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/total" />
-
-        <TextView
-            android:id="@+id/tvTotal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="R$ 7,00"
-            android:textAppearance="@style/TextAppearance.Inter.Heading2"
-            android:textColor="@color/green" />
-    </LinearLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
-        android:layout_width="96dp"
-        android:layout_height="48dp"
-        android:background="@drawable/bg_quantity_unity"
-        android:padding="12dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="R$"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etValor"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_marginStart="8dp"
-            android:background="@null"
-            android:hint="@string/valor"
-            android:inputType="number"
-            android:textColor="@color/gray100"
-            android:textColorHint="@color/gray200"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/textView"
-            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

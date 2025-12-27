@@ -1,5 +1,6 @@
 package com.omna.summa.ui.shoppingList
 
+import android.graphics.Canvas
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -7,11 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.omna.summa.R
 import com.omna.summa.data.local.entity.ShoppingListEntity
 import com.omna.summa.databinding.DialogAddListBinding
@@ -46,11 +51,16 @@ class AllShoppingListFragment : Fragment() {
         val itemAdapter = AllShoppingListAdapter(mutableListOf(), onItemClick = { list ->
             viewModel.selectList(list.id)
             val action = AllShoppingListFragmentDirections
-                .actionAllShoppingListFragmentToShoppingListFragment(listId = list.id, listName = list.name)
+                .actionAllShoppingListFragmentToShoppingListFragment(
+                    listId = list.id,
+                    listName = list.name
+                )
             findNavController().navigate(action)
+        }, onItemChanged = { item ->
+            viewModel.updateList(item)
         })
 
-        with(binding.rvItem){
+        with(binding.rvItem) {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = itemAdapter
         }
@@ -64,32 +74,113 @@ class AllShoppingListFragment : Fragment() {
         binding.btnAdd.setOnClickListener {
             showAddListDialog()
         }
+
+        val itemTouchHelp = ItemTouchHelper(object :
+            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean = false
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.bindingAdapterPosition
+
+                if (position == RecyclerView.NO_POSITION) return
+
+                val removedItem = itemAdapter.getItemByPosition(position).copy()
+
+                viewModel.deleteItem(removedItem)
+
+                Snackbar.make(
+                    binding.root,
+                    getString(R.string.lista_removida),
+                    Snackbar.LENGTH_LONG
+                )
+                    .setAction(getString(R.string.desfazer)) {
+                        viewModel.addList(removedItem) {}
+                    }
+                    .setActionTextColor(ContextCompat.getColor(requireContext(), R.color.red))
+                    .show()
+            }
+
+            override fun onChildDraw(
+                c: Canvas,
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                dX: Float,
+                dY: Float,
+                actionState: Int,
+                isCurrentlyActive: Boolean
+            ) {
+                val deleteIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_trash)
+                val background =
+                    ContextCompat.getDrawable(requireContext(), R.drawable.bg_swipe_delete)
+                val itemView = viewHolder.itemView
+
+                background?.setBounds(
+                    itemView.right + dX.toInt(),
+                    itemView.top,
+                    itemView.right,
+                    itemView.bottom
+                )
+
+                background?.draw(c)
+
+                deleteIcon?.let {
+                    val iconMargin = (itemView.height - it.intrinsicHeight) / 2
+                    val iconTop = itemView.top + iconMargin
+                    val iconLef = itemView.right - iconMargin - it.intrinsicWidth
+                    val iconRight = itemView.right - iconMargin
+                    val iconBottom = iconTop + it.intrinsicHeight
+
+                    it.setBounds(iconLef, iconTop, iconRight, iconBottom)
+                    it.draw(c)
+                }
+
+                super.onChildDraw(
+                    c,
+                    recyclerView,
+                    viewHolder,
+                    dX,
+                    dY,
+                    actionState,
+                    isCurrentlyActive
+                )
+            }
+        })
+
+        itemTouchHelp.attachToRecyclerView(binding.rvItem)
     }
 
-    private fun showAddListDialog(){
+    private fun showAddListDialog() {
         val dialogBinding = DialogAddListBinding.inflate(layoutInflater)
         val customTitle = layoutInflater.inflate(R.layout.dialog_add_list_title, null)
 
-        val dialog = MaterialAlertDialogBuilder(requireContext(),  R.style.ThemeOverlay_Summa_MaterialDialog)
-            .setCustomTitle(customTitle)
-            .setView(dialogBinding.root)
-            .setPositiveButton(getString(R.string.criar), null)
-            .setNegativeButton(getString(R.string.cancelar), null)
-            .create()
+        val dialog =
+            MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_Summa_MaterialDialog)
+                .setCustomTitle(customTitle)
+                .setView(dialogBinding.root)
+                .setPositiveButton(getString(R.string.criar), null)
+                .setNegativeButton(getString(R.string.cancelar), null)
+                .create()
 
         dialog.setOnShowListener {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
                 val listName = dialogBinding.etListName.text.toString().trim()
 
-                if(listName.isEmpty()){
+                if (listName.isEmpty()) {
                     dialogBinding.etListName.error = getString(R.string.informe_o_nome_da_lista)
                     return@setOnClickListener
                 }
 
-                viewModel.addList(ShoppingList(name = listName)){ listId ->
+                viewModel.addList(ShoppingList(name = listName)) { listId ->
                     viewModel.selectList(listId)
                     val action = AllShoppingListFragmentDirections
-                        .actionAllShoppingListFragmentToShoppingListFragment(listId = listId, listName = listName)
+                        .actionAllShoppingListFragmentToShoppingListFragment(
+                            listId = listId,
+                            listName = listName
+                        )
                     findNavController().navigate(action)
                 }
 

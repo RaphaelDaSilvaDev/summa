@@ -16,4 +16,6 @@ class ShoppingListRepository @Inject constructor(
     suspend fun deleteList(list: ShoppingListEntity) = dao.deleteList(list)
 
     suspend fun getListWithItems(listId: Long) = dao.getListWithItems(listId)
+
+    suspend fun updateList(list: ShoppingListEntity) = dao.updateList(list)
 }

@@ -49,9 +49,15 @@ class AllShoppingListViewModel @Inject constructor(private val repository: Shopp
         }
     }
 
-    fun deleteItem(item: ShoppingListEntity){
+    fun updateList(item: ShoppingList){
         viewModelScope.launch {
-            repository.deleteList(item)
+            repository.updateList(item.toEntry())
+        }
+    }
+
+    fun deleteItem(item: ShoppingList){
+        viewModelScope.launch {
+            repository.deleteList(item.toEntry())
         }
     }
 }

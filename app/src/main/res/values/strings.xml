@@ -19,4 +19,5 @@
     <string name="criar">Criar</string>
     <string name="cancelar">Cancelar</string>
     <string name="informe_o_nome_da_lista">Informe o nome da lista</string>
+    <string name="lista_removida">Lista removida</string>
 </resources>

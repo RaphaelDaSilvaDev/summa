@@ -50,20 +50,21 @@ class ShoppingItemFragment : Fragment() {
 
         val listName = args.listName
 
-        binding.tvPageName.text = if(!listName.isNullOrEmpty()) listName else getString(R.string.lista_de_compras)
+        binding.tvPageName.text =
+            if (!listName.isNullOrEmpty()) listName else getString(R.string.lista_de_compras)
 
         val menuUnitAdapter =
             ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, units)
 
         val dropdownBg = ContextCompat.getDrawable(requireContext(), R.drawable.bg_edit_text)
 
-        val itemAdapter = ShoppingItemAdapter(mutableListOf(), menuUnitAdapter, dropdownBg, onAmountChanged = {
-            val currentItems = viewModel.items.value
-            updateTotal(currentItems)
-        }, onItemChanged = {
-                item ->
-            viewModel.updateItem(item)
-        })
+        val itemAdapter =
+            ShoppingItemAdapter(mutableListOf(), menuUnitAdapter, dropdownBg, onAmountChanged = {
+                val currentItems = viewModel.items.value
+                updateTotal(currentItems)
+            }, onItemChanged = { item ->
+                viewModel.updateItem(item)
+            })
 
         with(binding.rvItem) {
             layoutManager = LinearLayoutManager(requireContext())
@@ -87,23 +88,31 @@ class ShoppingItemFragment : Fragment() {
         }
 
         binding.etListName.setOnEditorActionListener { _, actionId, _ ->
-            if(actionId == EditorInfo.IME_ACTION_NEXT){
+            if (actionId == EditorInfo.IME_ACTION_NEXT) {
                 binding.edtAmount.requestFocus()
                 true
-            }else false
+            } else false
         }
 
         binding.edtAmount.setOnEditorActionListener { _, actionId, _ ->
-            if(actionId == EditorInfo.IME_ACTION_DONE){
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
                 binding.btnAdd.performClick()
                 binding.etListName.requestFocus()
                 true
-            }else false
+            } else false
+        }
+
+        binding.slcUnit.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                binding.btnAdd.performClick()
+                binding.etListName.requestFocus()
+                true
+            } else false
         }
 
         binding.btnAdd.setOnClickListener {
             val itemName = binding.etListName.text.toString()
-            val itemQuantity = binding.edtAmount.text.toString().toIntOrNull() ?: 0
+            val itemQuantity = binding.edtAmount.text.toString().toDoubleOrNull() ?: 0.0
             val itemUnit = binding.slcUnit.text.toString()
 
             if (itemName.isEmpty()) {
@@ -115,12 +124,14 @@ class ShoppingItemFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            viewModel.insertItem(ShoppingItem(
-                name = itemName,
-                quantity = itemQuantity,
-                unit = itemUnit,
-                unitPrice = 0.0
-            ))
+            viewModel.insertItem(
+                ShoppingItem(
+                    name = itemName,
+                    quantity = itemQuantity,
+                    unit = itemUnit,
+                    unitPrice = 0.0
+                )
+            )
 
             binding.etListName.setText("")
             binding.edtAmount.setText("")

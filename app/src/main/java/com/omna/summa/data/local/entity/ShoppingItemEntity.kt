@@ -21,7 +21,7 @@ data class ShoppingItemEntity(
     val id: Long = 0,
     val listId: Long,
     var name: String,
-    var quantity: Int,
+    var quantity: Double,
     var unit: String,
     var unitPrice: Double?
 )

@@ -3,7 +3,7 @@ package com.omna.summa.domain.model
 data class ShoppingItem(
     val id: Long = 0,
     var name: String,
-    var quantity: Int = 0,
+    var quantity: Double = 0.0,
     var unit: String,
     var unitPrice: Double? = null
 ){

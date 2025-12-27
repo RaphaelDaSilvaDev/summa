@@ -56,7 +56,7 @@ class ShoppingItemAdapter(
                     if (!hasFocus) {
                         val updatedItem = item.copy(
                             name = etName.text.toString(),
-                            quantity = edtAmount.text.toString().toIntOrNull() ?: 0,
+                            quantity = edtAmount.text.toString().toDoubleOrNull() ?: 0.0,
                             unit = slcUnit.text.toString(),
                             unitPrice = etValor.text.toString().replace(",", ".").toDoubleOrNull()
                         )
@@ -69,7 +69,7 @@ class ShoppingItemAdapter(
                 etValor.onFocusChangeListener = focusListener
 
                 edtAmount.addTextChangedListener { text ->
-                    item.quantity = text.toString().toIntOrNull() ?: 0
+                    item.quantity = text.toString().replace(",", ".").toDoubleOrNull() ?: 0.0
                     tvTotal.text = "R$ %.2f".format(item.totalPrice())
                     onAmountChanged()
                 }
