@@ -127,29 +127,19 @@
             android:id="@+id/constraintLayout"
             android:layout_width="96dp"
             android:layout_height="48dp"
-            android:layout_weight="1"
             android:background="@drawable/bg_quantity_unity"
-            android:padding="12dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="R$"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etValor"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_marginStart="8dp"
                 android:background="@null"
+                android:padding="8dp"
                 android:hint="@string/valor"
+                android:imeOptions="actionDone"
                 android:inputType="numberDecimal"
                 android:textColor="@color/gray100"
                 android:textColorHint="@color/gray200"

@@ -7,24 +7,61 @@
     android:orientation="vertical"
     >
 
-    <TextView
-        android:id="@+id/tvListName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:labelFor="@+id/etListName"
-        android:text="@string/nome_da_lista" />
-
-    <EditText
-        android:id="@+id/etListName"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/bg_edit_text"
-        android:inputType="text"
-        android:textColor="@color/gray100"
-        android:textColorHint="@color/gray300"
-        android:imeOptions="actionDone"
-        android:hint="@string/compra_do_mes"
-        android:padding="12dp" />
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvListName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/etListName"
+            android:text="@string/nome_da_lista" />
+
+        <EditText
+            android:id="@+id/etListName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_edit_text"
+            android:inputType="text"
+            android:textColor="@color/gray100"
+            android:textColorHint="@color/gray300"
+            android:imeOptions="actionDone"
+            android:hint="@string/compra_do_mes"
+            android:padding="12dp" />
+    </LinearLayout>
+
+    <Space
+        android:layout_width="0dp"
+        android:layout_height="8dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/etDate"
+            android:text="@string/previsao_de_compra" />
+
+        <EditText
+            android:id="@+id/etDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/bg_edit_text"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none"
+            android:textColor="@color/gray100"
+            android:textColorHint="@color/gray300"
+            android:hint="@string/quando_comprar"
+            android:padding="12dp" />
+    </LinearLayout>
 
 </LinearLayout>

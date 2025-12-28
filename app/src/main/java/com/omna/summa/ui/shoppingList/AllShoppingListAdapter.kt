@@ -4,10 +4,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.core.content.ContextCompat.getString
 import androidx.recyclerview.widget.RecyclerView
+import com.omna.summa.R
 import com.omna.summa.databinding.ListShoppingBinding
 import com.omna.summa.domain.model.ShoppingList
-import java.time.format.DateTimeFormatter
+import com.omna.summa.ui.converters.formatCurrencyBR
+import com.omna.summa.ui.converters.formatPlannedDate
 
 class AllShoppingListAdapter(
     private val items: MutableList<ShoppingList>,
@@ -41,15 +44,25 @@ class AllShoppingListAdapter(
                 val totalItems = item.items.size
                 val completedItems = item.items.count { item -> item.unitPrice != null && item.unitPrice!! > 0 && item.quantity > 0}
                 etName.setText(item.name)
-                tvTotal.text = item.totalPrice.toString()
+                tvTotal.text = formatCurrencyBR(item.totalPrice)
                 tvTagAmount.text = "${completedItems}/${totalItems}"
-                tvDate.text = item.createdAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                if (item.plannedAt != null){
+                    tvDate.visibility = View.VISIBLE
+                    tvDate.text = formatPlannedDate(item.plannedAt!!)
+                }
+                else
+                    tvDate.visibility = View.INVISIBLE
 
                 val focusListener = View.OnFocusChangeListener { _, hasFocus ->
                     if(!hasFocus){
                         val updatedItem = item.copy(
                             name = etName.text.toString(),
                         )
+
+                        if (updatedItem.name.isEmpty()){
+                            etName.error =  getString(itemView.context,R.string.o_nome_da_lista_nao_pode_ser_vazio)
+                            return@OnFocusChangeListener
+                        }
                         onItemChanged(updatedItem)
                     }
                 }

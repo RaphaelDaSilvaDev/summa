@@ -9,7 +9,7 @@
     <string name="total">Total:</string>
     <string name="valor">Valor</string>
     <string name="preencha_o_nome_do_item">Preencha o nome do Item</string>
-    <string name="arroz">Arroz</string>
+    <string name="nome_item">Nome do item</string>
     <string name="todas_listas">Todas Listas</string>
     <string name="item_removido">Item removido</string>
     <string name="desfazer">DESFAZER</string>
@@ -20,4 +20,7 @@
     <string name="cancelar">Cancelar</string>
     <string name="informe_o_nome_da_lista">Informe o nome da lista</string>
     <string name="lista_removida">Lista removida</string>
+    <string name="previsao_de_compra">Previsão de compra</string>
+    <string name="quando_comprar">Quando comprar</string>
+    <string name="o_nome_da_lista_nao_pode_ser_vazio">O nome da lista não pode ser vazio</string>
 </resources>

@@ -52,7 +52,8 @@
 
                 <TextView
                     android:id="@+id/tvTotal"
-                    android:layout_width="140dp"
+                    android:layout_width="wrap_content"
+                    android:maxWidth="140dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:textAppearance="@style/TextAppearance.Inter.Heading1"
@@ -67,8 +68,9 @@
                 android:background="@drawable/bg_tag_quantity"
                 android:textAppearance="@style/TextAppearance.Inter.Heading2"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/tvDate"
-                app:layout_constraintStart_toEndOf="@+id/llTotal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.6"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="10/12" />
 
@@ -76,8 +78,9 @@
                 android:id="@+id/tvDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxWidth="140dp"
                 android:background="@drawable/bg_tag_quantity"
-                android:backgroundTint="@color/greenDark"
+                android:backgroundTint="@color/green"
                 android:textAppearance="@style/TextAppearance.Inter.Heading2"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

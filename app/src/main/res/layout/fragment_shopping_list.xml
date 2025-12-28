@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray600"
+    android:background="@color/gray500"
     tools:context=".ui.shoppingItem.ShoppingItemFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -26,17 +26,38 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <EditText
+            android:id="@+id/etPageName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:background="@null"
+            android:inputType="text"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.Inter.Heading1"
+            android:textColor="@color/gray100"
+            android:textColorHint="@color/gray300"
+            app:layout_constraintBottom_toBottomOf="@+id/ibBack"
+            app:layout_constraintEnd_toStartOf="@+id/tvDate"
+            app:layout_constraintStart_toEndOf="@+id/ibBack"
+            app:layout_constraintTop_toTopOf="@+id/ibBack"
+            app:layout_constraintVertical_bias="0"
+            tools:text="@string/lista_de_compras" />
+
         <TextView
-            android:id="@+id/tvPageName"
+            android:id="@+id/tvDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/lista_de_compras"
-            android:textAppearance="@style/TextAppearance.Inter.Heading1"
-            android:layout_marginStart="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/ibBack"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0" />
+            android:background="@drawable/bg_tag_quantity"
+            android:backgroundTint="@color/green"
+            android:maxWidth="140dp"
+            android:textAppearance="@style/TextAppearance.Inter.Heading2"
+            app:layout_constraintBottom_toBottomOf="@+id/etPageName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/etPageName"
+            tools:text="20/04/2025" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -75,7 +96,7 @@
                 android:textColor="@color/gray100"
                 android:textColorHint="@color/gray300"
                 android:imeOptions="actionNext"
-                android:hint="@string/arroz"
+                android:hint="@string/nome_item"
                 android:padding="12dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

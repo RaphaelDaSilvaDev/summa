@@ -1,13 +1,14 @@
 package com.omna.summa.ui.shoppingItem
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.omna.summa.data.local.mapper.toDomain
 import com.omna.summa.data.local.mapper.toEntry
 import com.omna.summa.data.repository.ShoppingItemRepository
+import com.omna.summa.data.repository.ShoppingListRepository
 import com.omna.summa.domain.model.ShoppingItem
+import com.omna.summa.domain.model.ShoppingList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ShoppingItemViewModel @Inject constructor(
     private val repository: ShoppingItemRepository,
+    private val listRepository: ShoppingListRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -57,5 +59,24 @@ class ShoppingItemViewModel @Inject constructor(
         viewModelScope.launch {
             repository.deleteItem(item.toEntry(listId))
         }
+    }
+
+    fun getListById(id: Long, onResult: (ShoppingList) -> Unit ){
+        viewModelScope.launch {
+            val item = listRepository.getListById(id).toDomain()
+            onResult(item)
+        }
+    }
+
+    fun updateList(name: String, id: Long){
+        getListById(id){item ->
+            item.name = name
+
+
+            viewModelScope.launch {
+                listRepository.updateList(item.toEntry())
+            }
+        }
+
     }
 }

@@ -9,5 +9,6 @@ data class ShoppingListEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val name: String,
-    val createdAt: LocalDate = LocalDate.now()
+    val createdAt: LocalDate = LocalDate.now(),
+    val plannedAt: LocalDate?
 )

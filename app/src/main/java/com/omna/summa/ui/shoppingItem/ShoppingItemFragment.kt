@@ -2,15 +2,13 @@ package com.omna.summa.ui.shoppingItem
 
 import android.graphics.Canvas
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -22,6 +20,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.omna.summa.R
 import com.omna.summa.databinding.FragmentShoppingListBinding
 import com.omna.summa.domain.model.ShoppingItem
+import com.omna.summa.ui.converters.formatPlannedDate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -48,10 +47,37 @@ class ShoppingItemFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val listName = args.listName
+        val id = args.listId
 
-        binding.tvPageName.text =
-            if (!listName.isNullOrEmpty()) listName else getString(R.string.lista_de_compras)
+        lifecycleScope.launch {
+            viewModel.getListById(id){ item ->
+                if(item.name.isNotEmpty()){
+                    binding.etPageName.setText(item.name)
+                }else{
+                    binding.etPageName.setHint(getString(R.string.lista_de_compras))
+                }
+
+                if(item.plannedAt != null){
+                    binding.tvDate.text = formatPlannedDate(item.plannedAt!!)
+                }else{
+                    binding.tvDate.visibility = View.INVISIBLE
+                }
+            }
+        }
+
+        val focusListener = View.OnFocusChangeListener { _, hasFocus ->
+            if(!hasFocus){
+                if(binding.etPageName.text.isNullOrEmpty()){
+                    binding.etPageName.error =
+                        getString(R.string.o_nome_da_lista_nao_pode_ser_vazio)
+                    return@OnFocusChangeListener
+                }
+
+                viewModel.updateList(binding.etPageName.text.toString(), id)
+            }
+        }
+
+        binding.etPageName.onFocusChangeListener = focusListener
 
         val menuUnitAdapter =
             ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, units)
@@ -87,6 +113,8 @@ class ShoppingItemFragment : Fragment() {
             }
         }
 
+        binding.etListName.requestFocus()
+
         binding.etListName.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_NEXT) {
                 binding.edtAmount.requestFocus()
@@ -116,11 +144,7 @@ class ShoppingItemFragment : Fragment() {
             val itemUnit = binding.slcUnit.text.toString()
 
             if (itemName.isEmpty()) {
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.preencha_o_nome_do_item),
-                    Toast.LENGTH_SHORT
-                ).show()
+                binding.etListName.error = getString(R.string.preencha_o_nome_do_item)
                 return@setOnClickListener
             }
 

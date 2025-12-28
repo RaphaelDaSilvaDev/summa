@@ -1,15 +1,19 @@
 package com.omna.summa.ui.shoppingItem
 
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.omna.summa.databinding.ItemShoppingBinding
 import com.omna.summa.domain.model.ShoppingItem
+import com.omna.summa.ui.converters.formatCurrencyBR
+import com.omna.summa.ui.converters.formatQuantity
 
 class ShoppingItemAdapter(
     private val items: MutableList<ShoppingItem>,
@@ -44,10 +48,10 @@ class ShoppingItemAdapter(
         fun bind(item: ShoppingItem) =
             with(binding) {
                 etName.setText(item.name)
-                edtAmount.setText(item.quantity.toString())
+                edtAmount.setText(formatQuantity(item.quantity))
                 slcUnit.setText(item.unit, false)
-                etValor.setText(item.unitPrice?.toString() ?: "")
-                tvTotal.text = if (item.unitPrice != null) "R$ %.2f".format(item.totalPrice()) else "-"
+                etValor.setText(if (item.unitPrice != null) formatCurrencyBR(item.unitPrice!!) else formatCurrencyBR(0.0))
+                tvTotal.text = if (item.unitPrice != null) formatCurrencyBR(item.totalPrice()) else formatCurrencyBR(0.0)
 
                 edtAmount.setSelectAllOnFocus(true)
                 etValor.setSelectAllOnFocus(true)
@@ -60,6 +64,10 @@ class ShoppingItemAdapter(
                             unit = slcUnit.text.toString(),
                             unitPrice = etValor.text.toString().replace(",", ".").toDoubleOrNull()
                         )
+
+                        edtAmount.setText(formatQuantity(updatedItem.quantity))
+                        etValor.setText(if (updatedItem.unitPrice != null) formatCurrencyBR(updatedItem.unitPrice!!) else formatCurrencyBR(0.0))
+
                         onItemChanged(updatedItem)
                     }
                 }
@@ -70,11 +78,11 @@ class ShoppingItemAdapter(
 
                 edtAmount.addTextChangedListener { text ->
                     item.quantity = text.toString().replace(",", ".").toDoubleOrNull() ?: 0.0
-                    tvTotal.text = "R$ %.2f".format(item.totalPrice())
+                    tvTotal.text = formatCurrencyBR(item.totalPrice())
                     onAmountChanged()
                 }
 
-                edtAmount.setOnEditorActionListener { v, actionId, event ->
+                edtAmount.setOnEditorActionListener { _, actionId, _ ->
                     if(actionId == EditorInfo.IME_ACTION_NEXT){
                         etValor.requestFocus()
                         etValor.selectAll()
@@ -84,8 +92,19 @@ class ShoppingItemAdapter(
 
                 etValor.addTextChangedListener { text ->
                     item.unitPrice = text.toString().replace(",", ".").toDoubleOrNull()
-                    tvTotal.text = "R$ %.2f".format(item.totalPrice())
+                    tvTotal.text = formatCurrencyBR(item.totalPrice())
                     onAmountChanged()
+                }
+
+                etValor.setOnEditorActionListener { v, actionId, _ ->
+                    if(actionId == EditorInfo.IME_ACTION_DONE){
+                        etValor.clearFocus()
+
+                        val imm = v.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.hideSoftInputFromWindow(v.windowToken, 0)
+
+                        true
+                    }else false
                 }
 
                 with(slcUnit) {

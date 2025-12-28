@@ -22,8 +22,11 @@ import com.omna.summa.data.local.entity.ShoppingListEntity
 import com.omna.summa.databinding.DialogAddListBinding
 import com.omna.summa.databinding.FragmentAllShoppingListBinding
 import com.omna.summa.domain.model.ShoppingList
+import com.omna.summa.ui.components.showDatePicker
+import com.omna.summa.ui.converters.formatPlannedDate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 @AndroidEntryPoint
 class AllShoppingListFragment : Fragment() {
@@ -156,6 +159,7 @@ class AllShoppingListFragment : Fragment() {
     private fun showAddListDialog() {
         val dialogBinding = DialogAddListBinding.inflate(layoutInflater)
         val customTitle = layoutInflater.inflate(R.layout.dialog_add_list_title, null)
+        var selectedDate: LocalDate? = null
 
         val dialog =
             MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_Summa_MaterialDialog)
@@ -164,6 +168,13 @@ class AllShoppingListFragment : Fragment() {
                 .setPositiveButton(getString(R.string.criar), null)
                 .setNegativeButton(getString(R.string.cancelar), null)
                 .create()
+
+        dialogBinding.etDate.setOnClickListener {
+            showDatePicker(it.context){ returnedDate ->
+                dialogBinding.etDate.setText(formatPlannedDate(returnedDate))
+                selectedDate = returnedDate
+            }
+        }
 
         dialog.setOnShowListener {
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
@@ -174,7 +185,7 @@ class AllShoppingListFragment : Fragment() {
                     return@setOnClickListener
                 }
 
-                viewModel.addList(ShoppingList(name = listName)) { listId ->
+                viewModel.addList(ShoppingList(name = listName, plannedAt = selectedDate)) { listId ->
                     viewModel.selectList(listId)
                     val action = AllShoppingListFragmentDirections
                         .actionAllShoppingListFragmentToShoppingListFragment(

@@ -19,13 +19,16 @@ interface ShoppingListDao {
     @Delete
     suspend fun deleteList(list: ShoppingListEntity)
 
-    @Query("SELECT * FROM shopping_lists ORDER BY createdAt DESC")
+    @Query("SELECT * FROM shopping_lists ORDER BY id DESC")
     fun getAllLists(): Flow<List<ShoppingListWithItems>>
 
     @Transaction
-    @Query("SELECT * FROM shopping_lists WHERE id = :listId")
+    @Query("SELECT * FROM shopping_lists WHERE id = :listId ORDER BY id DESC")
     suspend fun getListWithItems(listId: Long): ShoppingListWithItems?
 
     @Update
     suspend fun updateList(list: ShoppingListEntity)
+
+    @Query("SELECT * FROM shopping_lists WHERE id = :listId")
+    suspend fun getListById(listId: Long): ShoppingListEntity
 }
