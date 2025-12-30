@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
+import android.widget.CheckBox
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
 import com.omna.summa.R
@@ -47,6 +48,14 @@ class ShoppingItemAdapter(
         return items.size
     }
 
+    override fun getItemId(position: Int): Long {
+        return items[position].id
+    }
+
+    init {
+        setHasStableIds(true)
+    }
+
     inner class ViewHolder(private val binding: ItemShoppingBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -55,11 +64,14 @@ class ShoppingItemAdapter(
         @SuppressLint("ClickableViewAccessibility")
         fun bind(item: ShoppingItem) =
             with(binding) {
+                chkIsDone.setOnCheckedChangeListener(null)
+
                 etName.setText(item.name)
                 edtAmount.setText(formatQuantity(item.quantity))
                 slcUnit.setText(item.unit, false)
-                etValor.setText(if (item.unitPrice != null) formatCurrencyBR(item.unitPrice!!) else formatCurrencyBR(0L))
-                tvTotal.text = if (item.unitPrice != null) formatCurrencyBR(item.totalPriceInCents()) else formatCurrencyBR(0L)
+                etValor.setText(formatCurrencyBR(item.unitPrice ?: 0L))
+                tvTotal.text = formatCurrencyBR(item.totalPriceInCents())
+                chkIsDone.isChecked = item.isDone
 
                 edtAmount.setSelectAllOnFocus(true)
                 etValor.setSelectAllOnFocus(true)
@@ -149,6 +161,13 @@ class ShoppingItemAdapter(
                     }else false
                 }
 
+                chkIsDone.setOnClickListener {
+                    val isChecked = (it as CheckBox).isChecked
+                    if(isChecked != item.isDone){
+                        onItemChanged(item.copy(isDone = isChecked))
+                    }
+                }
+
                 with(slcUnit) {
                     setAdapter(unitAdapter)
                     setOnTouchListener { _,_ ->
@@ -175,5 +194,4 @@ class ShoppingItemAdapter(
         items.addAll(newItems)
         notifyDataSetChanged()
     }
-
 }

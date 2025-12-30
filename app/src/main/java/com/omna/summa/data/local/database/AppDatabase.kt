@@ -11,7 +11,7 @@ import com.omna.summa.data.local.entity.ShoppingListEntity
 
 @Database(
     entities = [ShoppingListEntity::class, ShoppingItemEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)

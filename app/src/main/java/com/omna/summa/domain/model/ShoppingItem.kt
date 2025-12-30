@@ -5,7 +5,8 @@ data class ShoppingItem(
     var name: String,
     var quantity: Double = 0.0,
     var unit: String,
-    var unitPrice: Long? = null
+    var unitPrice: Long? = null,
+    var isDone: Boolean = false
 ){
     fun totalPriceInCents(): Long {
         return (quantity * (unitPrice ?: 0L)).toLong()

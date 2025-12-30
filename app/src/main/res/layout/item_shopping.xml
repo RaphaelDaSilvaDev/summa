@@ -9,6 +9,13 @@
     android:padding="12dp"
     android:layout_marginBottom="12dp">
 
+    <CheckBox
+        android:id="@+id/chkIsDone"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <EditText
         android:id="@+id/etName"
         android:layout_width="wrap_content"
@@ -20,14 +27,15 @@
         android:textAppearance="@style/TextAppearance.Inter.Heading2"
         android:textColor="@color/gray100"
         android:textSize="18dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/chkIsDone"
+        app:layout_constraintTop_toTopOf="@+id/chkIsDone"
         tools:text="@string/sabonete" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintWidth="3"
+        android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

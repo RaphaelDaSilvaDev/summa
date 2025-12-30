@@ -8,7 +8,8 @@ fun ShoppingItemEntity.toDomain(): ShoppingItem = ShoppingItem(
     name = this.name,
     quantity = this.quantity,
     unit = this.unit,
-    unitPrice = this.unitPrice
+    unitPrice = this.unitPrice,
+    isDone = this.isDone
 )
 
 fun ShoppingItem.toEntry(listId: Long): ShoppingItemEntity = ShoppingItemEntity(
@@ -17,5 +18,6 @@ fun ShoppingItem.toEntry(listId: Long): ShoppingItemEntity = ShoppingItemEntity(
     name = name,
     quantity = quantity,
     unit = unit,
-    unitPrice = unitPrice
+    unitPrice = unitPrice,
+    isDone = isDone
 )

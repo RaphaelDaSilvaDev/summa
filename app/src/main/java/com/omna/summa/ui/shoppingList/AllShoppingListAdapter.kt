@@ -39,12 +39,20 @@ class AllShoppingListAdapter(
         return items.size
     }
 
+    override fun getItemId(position: Int): Long {
+        return items[position].id
+    }
+
+    init {
+        setHasStableIds(true)
+    }
+
     inner class ViewHolder(private val binding: ListShoppingBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ShoppingList) =
             with(binding) {
                 val totalItems = item.items.size
-                val completedItems = item.items.count { item -> item.unitPrice != null && item.unitPrice!! > 0 && item.quantity > 0}
+                val completedItems = item.items.count { item -> item.isDone}
                 etName.setText(item.name)
                 tvTotal.text = formatCurrencyBR(item.totalPrice)
                 tvTagAmount.text = "${completedItems}/${totalItems}"

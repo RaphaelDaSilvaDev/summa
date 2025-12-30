@@ -24,7 +24,7 @@ interface ShoppingItemDao {
     @Query("SELECT EXISTS(SELECT 1 FROM shopping_items WHERE id = :id)")
     suspend fun exists(id: Long): Boolean
 
-    @Query("SELECT * FROM shopping_items WHERE listId = :listId ORDER BY CASE WHEN unitPrice = 0 OR quantity = 0 THEN 0 ELSE 1 END")
+    @Query("SELECT * FROM shopping_items WHERE listId = :listId ORDER BY isDone, id")
     fun getItemsByList(listId: Long): Flow<List<ShoppingItemEntity>>
 
     @Query("SELECT * FROM shopping_items WHERE id = :id")
