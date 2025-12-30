@@ -23,5 +23,5 @@ data class ShoppingItemEntity(
     var name: String,
     var quantity: Double,
     var unit: String,
-    var unitPrice: Double?
+    var unitPrice: Long?
 )

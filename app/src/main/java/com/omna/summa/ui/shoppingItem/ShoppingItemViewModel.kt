@@ -42,9 +42,7 @@ class ShoppingItemViewModel @Inject constructor(
 
     fun updateItem(item: ShoppingItem){
         viewModelScope.launch(Dispatchers.IO) {
-            if(repository.exists(item.id)){
-                repository.updateItem(item.toEntry(listId))
-            }
+            repository.updateItem(item.toEntry(listId))
         }
     }
 
@@ -68,15 +66,9 @@ class ShoppingItemViewModel @Inject constructor(
         }
     }
 
-    fun updateList(name: String, id: Long){
-        getListById(id){item ->
-            item.name = name
-
-
-            viewModelScope.launch {
-                listRepository.updateList(item.toEntry())
-            }
+    fun updateList(item: ShoppingList){
+        viewModelScope.launch {
+            listRepository.updateList(item.toEntry())
         }
-
     }
 }

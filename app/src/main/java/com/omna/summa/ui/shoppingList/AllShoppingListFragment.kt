@@ -2,13 +2,13 @@ package com.omna.summa.ui.shoppingList
 
 import android.graphics.Canvas
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.omna.summa.R
-import com.omna.summa.data.local.entity.ShoppingListEntity
 import com.omna.summa.databinding.DialogAddListBinding
 import com.omna.summa.databinding.FragmentAllShoppingListBinding
 import com.omna.summa.domain.model.ShoppingList
@@ -55,8 +54,7 @@ class AllShoppingListFragment : Fragment() {
             viewModel.selectList(list.id)
             val action = AllShoppingListFragmentDirections
                 .actionAllShoppingListFragmentToShoppingListFragment(
-                    listId = list.id,
-                    listName = list.name
+                    listId = list.id
                 )
             findNavController().navigate(action)
         }, onItemChanged = { item ->
@@ -189,8 +187,7 @@ class AllShoppingListFragment : Fragment() {
                     viewModel.selectList(listId)
                     val action = AllShoppingListFragmentDirections
                         .actionAllShoppingListFragmentToShoppingListFragment(
-                            listId = listId,
-                            listName = listName
+                            listId = listId
                         )
                     findNavController().navigate(action)
                 }

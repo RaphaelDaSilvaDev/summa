@@ -9,8 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.omna.summa.R
 import com.omna.summa.databinding.ListShoppingBinding
 import com.omna.summa.domain.model.ShoppingList
+import com.omna.summa.ui.components.showDatePicker
 import com.omna.summa.ui.converters.formatCurrencyBR
 import com.omna.summa.ui.converters.formatPlannedDate
+import java.time.LocalDate
 
 class AllShoppingListAdapter(
     private val items: MutableList<ShoppingList>,
@@ -47,16 +49,16 @@ class AllShoppingListAdapter(
                 tvTotal.text = formatCurrencyBR(item.totalPrice)
                 tvTagAmount.text = "${completedItems}/${totalItems}"
                 if (item.plannedAt != null){
-                    tvDate.visibility = View.VISIBLE
                     tvDate.text = formatPlannedDate(item.plannedAt!!)
                 }
-                else
-                    tvDate.visibility = View.INVISIBLE
+                else{
+                    tvDate.text = getString(binding.root.context, R.string.adicione_uma_data)
+                }
 
                 val focusListener = View.OnFocusChangeListener { _, hasFocus ->
                     if(!hasFocus){
                         val updatedItem = item.copy(
-                            name = etName.text.toString(),
+                            name = etName.text.toString().trim()
                         )
 
                         if (updatedItem.name.isEmpty()){
@@ -69,11 +71,22 @@ class AllShoppingListAdapter(
 
                 etName.onFocusChangeListener = focusListener
 
-                etName.setOnEditorActionListener { v, actionId, event ->
+                etName.setOnEditorActionListener { _, actionId, _ ->
                     if(actionId == EditorInfo.IME_ACTION_DONE){
                         etName.clearFocus()
                         true
                     }else false
+                }
+
+                tvDate.setOnClickListener {
+                    showDatePicker(it.context, initialDate = item.plannedAt ?: LocalDate.now()){ returnedDate ->
+                        tvDate.text = formatPlannedDate(returnedDate)
+                        val updatedItem = item.copy(
+                            plannedAt = returnedDate
+                        )
+
+                        onItemChanged(updatedItem)
+                    }
                 }
 
                 root.setOnClickListener { onItemClick(item) }

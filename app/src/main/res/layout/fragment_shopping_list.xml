@@ -89,7 +89,7 @@
             <EditText
                 android:id="@+id/etListName"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/bg_edit_text"
                 android:inputType="text"
@@ -155,11 +155,13 @@
                 <com.google.android.material.textfield.MaterialAutoCompleteTextView
                     android:id="@+id/slcUnit"
                     android:layout_width="60dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:background="@null"
                     android:drawableEnd="@drawable/ic_chevron_down"
                     android:drawableTint="@color/gray200"
                     android:inputType="none"
+                    android:focusable="false"
+                    android:cursorVisible="false"
                     android:imeOptions="actionDone"
                     android:padding="8dp"
                     android:text="un"

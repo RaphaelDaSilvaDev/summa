@@ -9,9 +9,6 @@ data class ShoppingList(
     val createdAt: LocalDate = LocalDate.now(),
     var plannedAt: LocalDate? = null
 ){
-    val itemCount: Int
-        get() = items.size
-
-    val totalPrice: Double
-        get() = items.sumOf { it.totalPrice() }
+    val totalPrice: Long
+        get() = items.sumOf { it.totalPriceInCents() }
 }

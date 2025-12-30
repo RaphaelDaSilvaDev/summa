@@ -20,9 +20,12 @@ import com.google.android.material.snackbar.Snackbar
 import com.omna.summa.R
 import com.omna.summa.databinding.FragmentShoppingListBinding
 import com.omna.summa.domain.model.ShoppingItem
+import com.omna.summa.ui.components.showDatePicker
+import com.omna.summa.ui.converters.formatCurrencyBR
 import com.omna.summa.ui.converters.formatPlannedDate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 @AndroidEntryPoint
 class ShoppingItemFragment : Fragment() {
@@ -51,6 +54,17 @@ class ShoppingItemFragment : Fragment() {
 
         lifecycleScope.launch {
             viewModel.getListById(id){ item ->
+                binding.tvDate.setOnClickListener {
+                    showDatePicker(it.context, initialDate = item.plannedAt ?: LocalDate.now()){ returnedDate ->
+                        binding.tvDate.text = formatPlannedDate(returnedDate)
+                        val updatedItem = item.copy(
+                            plannedAt = returnedDate
+                        )
+
+                        viewModel.updateList(updatedItem)
+                    }
+                }
+
                 if(item.name.isNotEmpty()){
                     binding.etPageName.setText(item.name)
                 }else{
@@ -60,24 +74,26 @@ class ShoppingItemFragment : Fragment() {
                 if(item.plannedAt != null){
                     binding.tvDate.text = formatPlannedDate(item.plannedAt!!)
                 }else{
-                    binding.tvDate.visibility = View.INVISIBLE
+                    binding.tvDate.text = getString(R.string.adicione_uma_data)
                 }
             }
         }
 
-        val focusListener = View.OnFocusChangeListener { _, hasFocus ->
+        binding.etPageName.setOnFocusChangeListener {_, hasFocus ->
             if(!hasFocus){
                 if(binding.etPageName.text.isNullOrEmpty()){
                     binding.etPageName.error =
                         getString(R.string.o_nome_da_lista_nao_pode_ser_vazio)
-                    return@OnFocusChangeListener
+                    return@setOnFocusChangeListener
                 }
 
-                viewModel.updateList(binding.etPageName.text.toString(), id)
+                viewModel.getListById(id) { item ->
+                    val updatedItem = item.copy(name = binding.etPageName.text.toString().trim())
+                    viewModel.updateList(updatedItem)
+                }
+
             }
         }
-
-        binding.etPageName.onFocusChangeListener = focusListener
 
         val menuUnitAdapter =
             ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, units)
@@ -122,6 +138,7 @@ class ShoppingItemFragment : Fragment() {
             } else false
         }
 
+
         binding.edtAmount.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 binding.btnAdd.performClick()
@@ -153,7 +170,7 @@ class ShoppingItemFragment : Fragment() {
                     name = itemName,
                     quantity = itemQuantity,
                     unit = itemUnit,
-                    unitPrice = 0.0
+                    unitPrice = 0L
                 )
             )
 
@@ -246,8 +263,8 @@ class ShoppingItemFragment : Fragment() {
     }
 
     private fun updateTotal(items: List<ShoppingItem>) {
-        val total = items.sumOf { it.totalPrice() }
+        val total = items.sumOf { it.totalPriceInCents() }
 
-        binding.tvTotalGeral.text = "R$ %.2f".format(total)
+        binding.tvTotalGeral.text = formatCurrencyBR(total)
     }
 }
