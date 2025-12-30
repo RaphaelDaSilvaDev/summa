@@ -1,11 +1,13 @@
 package com.omna.summa.ui.shoppingList
 
+import android.content.Context
 import android.graphics.Canvas
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -52,6 +54,11 @@ class AllShoppingListFragment : Fragment() {
 
         val itemAdapter = AllShoppingListAdapter(mutableListOf(), onItemClick = { list ->
             viewModel.selectList(list.id)
+
+            val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+            view.clearFocus()
+
             val action = AllShoppingListFragmentDirections
                 .actionAllShoppingListFragmentToShoppingListFragment(
                     listId = list.id

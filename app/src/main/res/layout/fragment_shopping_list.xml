@@ -134,6 +134,7 @@
                     android:textAlignment="center"
                     android:hint="Qtd"
                     android:inputType="numberDecimal"
+                    android:digits="0123456789.,"
                     android:imeOptions="actionDone"
                     android:padding="8dp"
                     android:textColor="@color/gray100"

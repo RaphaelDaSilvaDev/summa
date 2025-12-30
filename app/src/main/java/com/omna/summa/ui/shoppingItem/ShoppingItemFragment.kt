@@ -1,11 +1,13 @@
 package com.omna.summa.ui.shoppingItem
 
+import android.content.Context
 import android.graphics.Canvas
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -37,7 +39,7 @@ class ShoppingItemFragment : Fragment() {
 
     private val viewModel: ShoppingItemViewModel by viewModels()
 
-    val units = listOf("un", "kg", "L")
+    val units = listOf("un", "kg", "g", "L", "ml")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -129,58 +131,64 @@ class ShoppingItemFragment : Fragment() {
             }
         }
 
-        binding.etListName.requestFocus()
+        with(binding){
+            etListName.requestFocus()
+            val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(etListName, InputMethodManager.SHOW_IMPLICIT)
 
-        binding.etListName.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                binding.edtAmount.requestFocus()
-                true
-            } else false
-        }
-
-
-        binding.edtAmount.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                binding.btnAdd.performClick()
-                binding.etListName.requestFocus()
-                true
-            } else false
-        }
-
-        binding.slcUnit.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                binding.btnAdd.performClick()
-                binding.etListName.requestFocus()
-                true
-            } else false
-        }
-
-        binding.btnAdd.setOnClickListener {
-            val itemName = binding.etListName.text.toString()
-            val itemQuantity = binding.edtAmount.text.toString().toDoubleOrNull() ?: 0.0
-            val itemUnit = binding.slcUnit.text.toString()
-
-            if (itemName.isEmpty()) {
-                binding.etListName.error = getString(R.string.preencha_o_nome_do_item)
-                return@setOnClickListener
+            etListName.setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_NEXT) {
+                    edtAmount.requestFocus()
+                    true
+                } else false
             }
 
-            viewModel.insertItem(
-                ShoppingItem(
-                    name = itemName,
-                    quantity = itemQuantity,
-                    unit = itemUnit,
-                    unitPrice = 0L
+
+            edtAmount.setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    btnAdd.performClick()
+                    etListName.requestFocus()
+                    true
+                } else false
+            }
+
+            slcUnit.setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    btnAdd.performClick()
+                    etListName.requestFocus()
+                    true
+                } else false
+            }
+
+            btnAdd.setOnClickListener {
+                val itemName = etListName.text.toString()
+                val itemQuantity = edtAmount.text.toString().replace(",", ".").toDoubleOrNull() ?: 0.0
+                val itemUnit = slcUnit.text.toString()
+
+                if (itemName.isEmpty()) {
+                    binding.etListName.error = getString(R.string.preencha_o_nome_do_item)
+                    return@setOnClickListener
+                }
+
+                viewModel.insertItem(
+                    ShoppingItem(
+                        name = itemName,
+                        quantity = itemQuantity,
+                        unit = itemUnit,
+                        unitPrice = 0L
+                    )
                 )
-            )
 
-            binding.etListName.setText("")
-            binding.edtAmount.setText("")
-            binding.slcUnit.setText(menuUnitAdapter.getItem(0), false)
-        }
+                etListName.setText("")
+                edtAmount.setText("")
+                slcUnit.setText(menuUnitAdapter.getItem(0), false)
 
-        binding.ibBack.setOnClickListener {
-            findNavController().popBackStack()
+                etListName.requestFocus()
+            }
+
+            ibBack.setOnClickListener {
+                findNavController().popBackStack()
+            }
         }
 
         val itemTouchHelper = ItemTouchHelper(object :

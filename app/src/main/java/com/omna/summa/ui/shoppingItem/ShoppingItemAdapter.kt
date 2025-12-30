@@ -1,5 +1,6 @@
 package com.omna.summa.ui.shoppingItem
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.text.Editable
@@ -51,6 +52,7 @@ class ShoppingItemAdapter(
 
         private var isUpdating = false
 
+        @SuppressLint("ClickableViewAccessibility")
         fun bind(item: ShoppingItem) =
             with(binding) {
                 etName.setText(item.name)
@@ -72,10 +74,12 @@ class ShoppingItemAdapter(
 
                         val updatedItem = item.copy(
                             name = etName.text.toString().trim(),
-                            quantity = edtAmount.text.toString().toDoubleOrNull() ?: 0.0,
+                            quantity = edtAmount.text.toString().replace(",", ".").toDoubleOrNull() ?: 0.0,
                             unit = slcUnit.text.toString(),
                             unitPrice = parseCurrencyBRToCents(etValor.text.toString())
                         )
+
+                        edtAmount.setText(formatQuantity(updatedItem.quantity))
 
                         onItemChanged(updatedItem)
                     }

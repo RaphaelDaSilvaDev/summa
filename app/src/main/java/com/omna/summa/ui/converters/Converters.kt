@@ -11,7 +11,7 @@ import kotlin.math.roundToLong
 
 fun formatQuantity(value: Double): String{
     val formatter = DecimalFormat("#.##")
-    return formatter.format(value)
+    return formatter.format(value).toString().replace(".", ",")
 }
 
 fun formatCurrencyBR(cents: Long): String {
