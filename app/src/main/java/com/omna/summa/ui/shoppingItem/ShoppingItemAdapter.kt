@@ -76,7 +76,11 @@ class ShoppingItemAdapter(
                 edtAmount.setSelectAllOnFocus(true)
                 etValor.setSelectAllOnFocus(true)
 
-                val focusListener = View.OnFocusChangeListener { _, hasFocus ->
+                val focusListener = View.OnFocusChangeListener { view, hasFocus ->
+                    if(view.id == edtAmount.id || view.id == slcUnit.id){
+                        clQuantity.isSelected = hasFocus
+                    }
+
                     if (!hasFocus) {
 
                         if (etName.text.toString().isEmpty()){

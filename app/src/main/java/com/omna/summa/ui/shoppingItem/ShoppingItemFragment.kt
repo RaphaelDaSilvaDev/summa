@@ -143,6 +143,9 @@ class ShoppingItemFragment : Fragment() {
                 } else false
             }
 
+            edtAmount.setOnFocusChangeListener{ _, hasFocus ->
+                clQuantity.isSelected = hasFocus
+            }
 
             edtAmount.setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -150,6 +153,10 @@ class ShoppingItemFragment : Fragment() {
                     etListName.requestFocus()
                     true
                 } else false
+            }
+
+            slcUnit.setOnFocusChangeListener{ _, hasFocus ->
+                clQuantity.isSelected = hasFocus
             }
 
             slcUnit.setOnEditorActionListener { _, actionId, _ ->
