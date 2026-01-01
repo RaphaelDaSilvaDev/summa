@@ -19,11 +19,11 @@ interface ShoppingListDao {
     @Delete
     suspend fun deleteList(list: ShoppingListEntity)
 
-    @Query("SELECT * FROM shopping_lists ORDER BY id DESC")
+    @Query("SELECT * FROM shopping_lists WHERE isActive = 1 ORDER BY id DESC")
     fun getAllLists(): Flow<List<ShoppingListWithItems>>
 
     @Transaction
-    @Query("SELECT * FROM shopping_lists WHERE id = :listId ORDER BY id DESC")
+    @Query("SELECT * FROM shopping_lists WHERE id = :listId AND isActive = 1 ORDER BY id DESC")
     suspend fun getListWithItems(listId: Long): ShoppingListWithItems?
 
     @Update

@@ -7,7 +7,8 @@ data class ShoppingList(
     var name: String,
     val items: List<ShoppingItem> = emptyList(),
     val createdAt: LocalDate = LocalDate.now(),
-    var plannedAt: LocalDate? = null
+    var plannedAt: LocalDate? = null,
+    var isActive: Boolean = true
 ){
     val totalPrice: Long
         get() = items.sumOf { it.totalPriceInCents() }

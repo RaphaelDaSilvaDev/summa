@@ -7,6 +7,7 @@ import com.omna.summa.data.local.dao.ShoppingItemDao
 import com.omna.summa.data.local.dao.ShoppingListDao
 import com.omna.summa.data.local.database.migrations.MIGRATION_1_2
 import com.omna.summa.data.local.database.migrations.MIGRATION_2_3
+import com.omna.summa.data.local.database.migrations.MIGRATION_3_4
 import com.omna.summa.data.repository.ShoppingItemRepository
 import com.omna.summa.data.repository.ShoppingListRepository
 import dagger.Module
@@ -25,7 +26,7 @@ class AppModule {
             app,
             AppDatabase::class.java,
             "summa_db")
-            .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+            .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .build()
     }
 

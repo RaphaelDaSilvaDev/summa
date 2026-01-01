@@ -9,19 +9,22 @@ fun ShoppingListWithItems.toDomain(): ShoppingList = ShoppingList(
     name = this.list.name,
     items = items.map { it.toDomain() },
     createdAt = this.list.createdAt,
-    plannedAt = this.list.plannedAt
+    plannedAt = this.list.plannedAt,
+    isActive = this.list.isActive
 )
 
 fun ShoppingListEntity.toDomain(): ShoppingList = ShoppingList(
     id =  this.id,
     name = this.name,
     createdAt = this.createdAt,
-    plannedAt = this.plannedAt
+    plannedAt = this.plannedAt,
+    isActive = this.isActive
 )
 
 fun ShoppingList.toEntry(): ShoppingListEntity = ShoppingListEntity(
     id = id,
     name = name,
     createdAt = createdAt,
-    plannedAt = plannedAt
+    plannedAt = plannedAt,
+    isActive = isActive
 )

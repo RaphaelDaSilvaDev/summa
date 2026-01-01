@@ -110,9 +110,9 @@ class AllShoppingListFragment : Fragment() {
 
                 if (position == RecyclerView.NO_POSITION) return
 
-                val removedItem = itemAdapter.getItemByPosition(position).copy()
+                val removedItem = itemAdapter.getItemByPosition(position).copy(isActive = false)
 
-                viewModel.deleteItem(removedItem)
+                viewModel.updateList(removedItem)
 
                 Snackbar.make(
                     binding.root,
@@ -120,8 +120,18 @@ class AllShoppingListFragment : Fragment() {
                     Snackbar.LENGTH_LONG
                 )
                     .setAction(getString(R.string.desfazer)) {
-                        viewModel.addList(removedItem) {}
+                        val returnItem = removedItem.copy(isActive = true)
+                        viewModel.updateList(returnItem)
                     }
+                    .addCallback(object : Snackbar.Callback(){
+                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                            super.onDismissed(transientBottomBar, event)
+
+                            if(event != DISMISS_EVENT_ACTION){
+                               viewModel.deleteItem(removedItem)
+                            }
+                        }
+                    })
                     .setActionTextColor(ContextCompat.getColor(requireContext(), R.color.red))
                     .show()
             }

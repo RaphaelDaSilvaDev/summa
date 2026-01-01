@@ -10,5 +10,6 @@ data class ShoppingListEntity(
     val id: Long = 0,
     val name: String,
     val createdAt: LocalDate = LocalDate.now(),
-    val plannedAt: LocalDate?
+    val plannedAt: LocalDate?,
+    val isActive: Boolean
 )
