@@ -6,7 +6,9 @@ import com.omna.summa.data.local.entity.ShoppingListEntity
 import com.omna.summa.data.local.mapper.toDomain
 import com.omna.summa.data.local.mapper.toEntry
 import com.omna.summa.data.local.relation.ShoppingListWithItems
+import com.omna.summa.data.repository.ShoppingItemRepository
 import com.omna.summa.data.repository.ShoppingListRepository
+import com.omna.summa.domain.model.ShoppingItem
 import com.omna.summa.domain.model.ShoppingList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +20,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AllShoppingListViewModel @Inject constructor(private val repository: ShoppingListRepository) : ViewModel() {
+class AllShoppingListViewModel @Inject constructor(
+    private val repository: ShoppingListRepository,
+    private val itemRepository: ShoppingItemRepository
+) : ViewModel() {
 
     private val _lists =  MutableStateFlow<List<ShoppingList>>(emptyList())
 
@@ -79,5 +84,12 @@ class AllShoppingListViewModel @Inject constructor(private val repository: Shopp
 
     fun onSearchQueryChanged(newQuery: String){
         _searchQuery.value = newQuery
+    }
+
+    fun insertItem(item: ShoppingItem, listId: Long) {
+        viewModelScope.launch {
+            val item = item.toEntry(listId)
+            itemRepository.insetItem(item)
+        }
     }
 }

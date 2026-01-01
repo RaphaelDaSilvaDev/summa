@@ -110,6 +110,10 @@ class ShoppingItemFragment : Fragment() {
                 updateTotal(currentItems)
             }, onItemChanged = { item ->
                 viewModel.updateItem(item)
+            }, onRemoveItem = { item ->
+                viewModel.deleteItem(item)
+            }, onItemInsert = { item ->
+                viewModel.insertItem(item)
             })
 
         with(binding.rvItem) {
@@ -225,79 +229,6 @@ class ShoppingItemFragment : Fragment() {
                 findNavController().popBackStack()
             }
         }
-
-        val itemTouchHelper = ItemTouchHelper(object :
-            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean = false
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.bindingAdapterPosition
-
-                if (position == RecyclerView.NO_POSITION) return
-
-                val removedItem = itemAdapter.getItemByPositon(position).copy()
-
-                viewModel.deleteItem(removedItem)
-
-                Snackbar.make(binding.root, getString(R.string.item_removido), Snackbar.LENGTH_LONG)
-                    .setAction(getString(R.string.desfazer)) {
-                        viewModel.insertItem(removedItem)
-                    }
-                    .setActionTextColor(ContextCompat.getColor(requireContext(), R.color.red))
-                    .show()
-            }
-
-            override fun onChildDraw(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {
-                val deleteIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_trash)
-                val background =
-                    ContextCompat.getDrawable(requireContext(), R.drawable.bg_swipe_delete)
-                val itemView = viewHolder.itemView
-
-                background?.setBounds(
-                    itemView.right + dX.toInt(),
-                    itemView.top,
-                    itemView.right,
-                    itemView.bottom
-                )
-
-                background?.draw(c)
-
-                deleteIcon?.let {
-                    val iconMargin = (itemView.height - it.intrinsicHeight) / 2
-                    val iconTop = itemView.top + iconMargin
-                    val iconLef = itemView.right - iconMargin - it.intrinsicWidth
-                    val iconRight = itemView.right - iconMargin
-                    val iconBottom = iconTop + it.intrinsicHeight
-
-                    it.setBounds(iconLef, iconTop, iconRight, iconBottom)
-                    it.draw(c)
-                }
-
-                super.onChildDraw(
-                    c,
-                    recyclerView,
-                    viewHolder,
-                    dX,
-                    dY,
-                    actionState,
-                    isCurrentlyActive
-                )
-            }
-        })
-
-        itemTouchHelper.attachToRecyclerView(binding.rvItem)
     }
 
     override fun onDestroyView() {

@@ -1,11 +1,15 @@
 package com.omna.summa.ui.shoppingList
 
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getString
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.omna.summa.R
 import com.omna.summa.databinding.ListShoppingBinding
 import com.omna.summa.domain.model.ShoppingList
@@ -17,7 +21,9 @@ import java.time.LocalDate
 class AllShoppingListAdapter(
     private val items: MutableList<ShoppingList>,
     private val onItemClick: (ShoppingList) -> Unit,
-    private val onItemChanged: (ShoppingList) -> Unit
+    private val onItemChanged: (ShoppingList) -> Unit,
+    private val onItemDeleted: (ShoppingList) -> Unit,
+    private val onDuplicateList: (ShoppingList) -> Unit
 ) : RecyclerView.Adapter<AllShoppingListAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -95,6 +101,49 @@ class AllShoppingListAdapter(
 
                         onItemChanged(updatedItem)
                     }
+                }
+
+                ibMenu.setOnClickListener { view ->
+                    val popup = PopupMenu(view.context, ibMenu, Gravity.RIGHT, 0 , R.style.CustomPopupMenu)
+                    popup.menuInflater.inflate(R.menu.list_menu, popup.menu)
+
+                    popup.setOnMenuItemClickListener { menuItem ->
+                        when(menuItem.itemId){
+                            R.id.itDelete -> {
+                                val removedItem = item.copy(isActive = false)
+                                onItemChanged(removedItem)
+
+                                Snackbar.make(
+                                    binding.root,
+                                    getString(view.context,R.string.lista_removida),
+                                    Snackbar.LENGTH_LONG
+                                )
+                                    .setAction(getString(view.context, R.string.desfazer)) {
+                                        val returnItem = removedItem.copy(isActive = true)
+                                        onItemChanged(returnItem)
+                                    }
+                                    .addCallback(object : Snackbar.Callback(){
+                                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                            super.onDismissed(transientBottomBar, event)
+
+                                            if(event != DISMISS_EVENT_ACTION){
+                                                onItemDeleted(removedItem)
+                                            }
+                                        }
+                                    })
+                                    .setActionTextColor(ContextCompat.getColor(view.context, R.color.red))
+                                    .show()
+                                true
+                            }
+                            R.id.itDuplicate -> {
+                                onDuplicateList(item.copy())
+                                true
+                            }
+                            else -> false
+                        }
+                    }
+
+                    popup.show()
                 }
 
                 root.setOnClickListener { onItemClick(item) }

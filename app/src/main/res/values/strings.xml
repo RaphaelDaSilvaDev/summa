@@ -30,4 +30,6 @@
     <string name="lista_vazia_adicione_itens">Lista vazia, adicione itens!</string>
     <string name="item_nao_encontrado">Não encontramos esse item na sua lista.</string>
     <string name="n_o_encontramos_essa_lista">Não encontramos essa lista</string>
+    <string name="remover">Remover</string>
+    <string name="duplicar">Duplicar</string>
 </resources>

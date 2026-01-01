@@ -1,7 +1,6 @@
 package com.omna.summa.ui.shoppingList
 
 import android.content.Context
-import android.graphics.Canvas
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,7 +8,6 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
@@ -18,11 +16,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.omna.summa.R
 import com.omna.summa.databinding.DialogAddListBinding
 import com.omna.summa.databinding.FragmentAllShoppingListBinding
@@ -70,6 +65,10 @@ class AllShoppingListFragment : Fragment() {
             findNavController().navigate(action)
         }, onItemChanged = { item ->
             viewModel.updateList(item)
+        }, onItemDeleted = { item ->
+            viewModel.deleteItem(item)
+        }, onDuplicateList = {item ->
+            showAddListDialog(item)
         })
 
         with(binding.rvItem) {
@@ -113,98 +112,11 @@ class AllShoppingListFragment : Fragment() {
         }
 
         binding.btnAdd.setOnClickListener {
-            showAddListDialog()
+            showAddListDialog(null)
         }
-
-        val itemTouchHelp = ItemTouchHelper(object :
-            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-            override fun onMove(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                target: RecyclerView.ViewHolder
-            ): Boolean = false
-
-            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val position = viewHolder.bindingAdapterPosition
-
-                if (position == RecyclerView.NO_POSITION) return
-
-                val removedItem = itemAdapter.getItemByPosition(position).copy(isActive = false)
-
-                viewModel.updateList(removedItem)
-
-                Snackbar.make(
-                    binding.root,
-                    getString(R.string.lista_removida),
-                    Snackbar.LENGTH_LONG
-                )
-                    .setAction(getString(R.string.desfazer)) {
-                        val returnItem = removedItem.copy(isActive = true)
-                        viewModel.updateList(returnItem)
-                    }
-                    .addCallback(object : Snackbar.Callback(){
-                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                            super.onDismissed(transientBottomBar, event)
-
-                            if(event != DISMISS_EVENT_ACTION){
-                               viewModel.deleteItem(removedItem)
-                            }
-                        }
-                    })
-                    .setActionTextColor(ContextCompat.getColor(requireContext(), R.color.red))
-                    .show()
-            }
-
-            override fun onChildDraw(
-                c: Canvas,
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder,
-                dX: Float,
-                dY: Float,
-                actionState: Int,
-                isCurrentlyActive: Boolean
-            ) {
-                val deleteIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_trash)
-                val background =
-                    ContextCompat.getDrawable(requireContext(), R.drawable.bg_swipe_delete)
-                val itemView = viewHolder.itemView
-
-                background?.setBounds(
-                    itemView.right + dX.toInt(),
-                    itemView.top,
-                    itemView.right,
-                    itemView.bottom
-                )
-
-                background?.draw(c)
-
-                deleteIcon?.let {
-                    val iconMargin = (itemView.height - it.intrinsicHeight) / 2
-                    val iconTop = itemView.top + iconMargin
-                    val iconLef = itemView.right - iconMargin - it.intrinsicWidth
-                    val iconRight = itemView.right - iconMargin
-                    val iconBottom = iconTop + it.intrinsicHeight
-
-                    it.setBounds(iconLef, iconTop, iconRight, iconBottom)
-                    it.draw(c)
-                }
-
-                super.onChildDraw(
-                    c,
-                    recyclerView,
-                    viewHolder,
-                    dX,
-                    dY,
-                    actionState,
-                    isCurrentlyActive
-                )
-            }
-        })
-
-        itemTouchHelp.attachToRecyclerView(binding.rvItem)
     }
 
-    private fun showAddListDialog() {
+    private fun showAddListDialog(list: ShoppingList?) {
         val dialogBinding = DialogAddListBinding.inflate(layoutInflater)
         val customTitle = layoutInflater.inflate(R.layout.dialog_add_list_title, null)
         var selectedDate: LocalDate? = null
@@ -213,12 +125,14 @@ class AllShoppingListFragment : Fragment() {
             MaterialAlertDialogBuilder(requireContext(), R.style.ThemeOverlay_Summa_MaterialDialog)
                 .setCustomTitle(customTitle)
                 .setView(dialogBinding.root)
-                .setPositiveButton(getString(R.string.criar), null)
+                .setPositiveButton( if (list != null) getString(R.string.duplicar) else getString(R.string.criar), null)
                 .setNegativeButton(getString(R.string.cancelar), null)
                 .create()
 
+        dialogBinding.etListName.setText(list?.name ?: "")
+
         dialogBinding.etDate.setOnClickListener {
-            showDatePicker(it.context){ returnedDate ->
+            showDatePicker(it.context, initialDate = list?.plannedAt ?: LocalDate.now()){ returnedDate ->
                 dialogBinding.etDate.setText(formatPlannedDate(returnedDate))
                 selectedDate = returnedDate
             }
@@ -233,13 +147,30 @@ class AllShoppingListFragment : Fragment() {
                     return@setOnClickListener
                 }
 
-                viewModel.addList(ShoppingList(name = listName, plannedAt = selectedDate)) { listId ->
-                    viewModel.selectList(listId)
-                    val action = AllShoppingListFragmentDirections
-                        .actionAllShoppingListFragmentToShoppingListFragment(
-                            listId = listId
-                        )
-                    findNavController().navigate(action)
+                if(list != null){
+                    viewModel.addList(ShoppingList(name = listName, plannedAt = selectedDate)) { listId ->
+                        viewModel.selectList(listId)
+
+                        list.items.forEach { item ->
+                            viewModel.insertItem(item.copy(id = 0, isDone = false), listId)
+                        }
+
+                        val action = AllShoppingListFragmentDirections
+                            .actionAllShoppingListFragmentToShoppingListFragment(
+                                listId = listId
+                            )
+                        findNavController().navigate(action)
+                    }
+
+                }else{
+                    viewModel.addList(ShoppingList(name = listName, plannedAt = selectedDate)) { listId ->
+                        viewModel.selectList(listId)
+                        val action = AllShoppingListFragmentDirections
+                            .actionAllShoppingListFragmentToShoppingListFragment(
+                                listId = listId
+                            )
+                        findNavController().navigate(action)
+                    }
                 }
 
                 dialog.dismiss()

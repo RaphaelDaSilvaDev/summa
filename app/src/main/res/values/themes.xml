@@ -6,4 +6,9 @@
     </style>
 
     <style name="Theme.Summa" parent="Base.Theme.Summa" />
+
+    <style name="CustomPopupMenu" parent="Widget.MaterialComponents.PopupMenu">
+        <item name="android:popupBackground">@color/gray600</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
 </resources>

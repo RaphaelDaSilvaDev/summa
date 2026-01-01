@@ -3,4 +3,9 @@
     <style name="Base.Theme.Summa" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorSurfaceContainerHigh">@color/gray900</item>
     </style>
+
+    <style name="CustomPopupMenu" parent="Widget.MaterialComponents.PopupMenu">
+        <item name="android:popupBackground">@color/gray600</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
 </resources>

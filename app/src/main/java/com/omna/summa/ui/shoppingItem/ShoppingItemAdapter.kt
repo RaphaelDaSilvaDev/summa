@@ -5,6 +5,8 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +14,12 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.CheckBox
+import android.widget.PopupMenu
+import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getString
 import androidx.core.widget.addTextChangedListener
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import com.omna.summa.R
 import com.omna.summa.databinding.ItemShoppingBinding
 import com.omna.summa.domain.model.ShoppingItem
@@ -26,7 +32,9 @@ class ShoppingItemAdapter(
     private val unitAdapter: ArrayAdapter<String>,
     private val dropdownBackground: Drawable?,
     private val onAmountChanged: () -> Unit,
-    private val onItemChanged: (ShoppingItem) -> Unit
+    private val onItemChanged: (ShoppingItem) -> Unit,
+    private val onRemoveItem: (ShoppingItem) -> Unit,
+    private val onItemInsert: (ShoppingItem) -> Unit
 ) : RecyclerView.Adapter<ShoppingItemAdapter.ViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -170,6 +178,32 @@ class ShoppingItemAdapter(
                     if(isChecked != item.isDone){
                         onItemChanged(item.copy(isDone = isChecked))
                     }
+                }
+
+                ibMenu.setOnClickListener { view ->
+                    val popup = PopupMenu(view.context, ibMenu, Gravity.RIGHT, 0, R.style.CustomPopupMenu)
+                    popup.menuInflater.inflate(R.menu.item_menu, popup.menu)
+
+                    popup.setOnMenuItemClickListener { menuItem ->
+                        when(menuItem.itemId){
+                            R.id.itDelete -> {
+                                val removedItem = item.copy()
+
+                                onRemoveItem(removedItem)
+
+                                Snackbar.make(binding.root, getString(view.context,R.string.desfazer), Snackbar.LENGTH_LONG)
+                                    .setAction(getString(view.context,R.string.desfazer)) {
+                                        onItemInsert(removedItem)
+                                    }
+                                    .setActionTextColor(ContextCompat.getColor(view.context, R.color.red))
+                                    .show()
+
+                                true
+                            }
+                            else -> false
+                        }
+                    }
+                    popup.show()
                 }
 
                 with(slcUnit) {
