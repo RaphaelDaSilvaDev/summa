@@ -2,7 +2,6 @@ package com.omna.summa.ui.shoppingList
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.omna.summa.data.local.entity.ShoppingListEntity
 import com.omna.summa.data.local.mapper.toDomain
 import com.omna.summa.data.local.mapper.toEntry
 import com.omna.summa.data.local.relation.ShoppingListWithItems

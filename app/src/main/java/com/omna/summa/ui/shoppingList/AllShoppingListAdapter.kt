@@ -1,10 +1,12 @@
 package com.omna.summa.ui.shoppingList
 
+import android.content.Context
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getString
@@ -80,6 +82,9 @@ class AllShoppingListAdapter(
                             return@OnFocusChangeListener
                         }
                         onItemChanged(updatedItem)
+
+                        val imm = itemView.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.hideSoftInputFromWindow(itemView.windowToken, 0)
                     }
                 }
 

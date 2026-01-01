@@ -2,7 +2,6 @@ package com.omna.summa.ui.converters
 
 import android.icu.text.DecimalFormat
 import android.icu.text.NumberFormat
-import android.util.Log
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit

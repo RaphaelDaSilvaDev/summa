@@ -1,7 +1,6 @@
 package com.omna.summa.ui.shoppingItem
 
 import android.content.Context
-import android.graphics.Canvas
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,10 +16,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.snackbar.Snackbar
 import com.omna.summa.R
 import com.omna.summa.databinding.FragmentShoppingListBinding
 import com.omna.summa.domain.model.ShoppingItem

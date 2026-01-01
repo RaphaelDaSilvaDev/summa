@@ -131,6 +131,8 @@ class AllShoppingListFragment : Fragment() {
 
         dialogBinding.etListName.setText(list?.name ?: "")
 
+        dialogBinding.etDate.setText(if(list?.plannedAt != null) formatPlannedDate(list.plannedAt!!) else "")
+
         dialogBinding.etDate.setOnClickListener {
             showDatePicker(it.context, initialDate = list?.plannedAt ?: LocalDate.now()){ returnedDate ->
                 dialogBinding.etDate.setText(formatPlannedDate(returnedDate))

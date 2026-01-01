@@ -32,4 +32,6 @@
     <string name="n_o_encontramos_essa_lista">Não encontramos essa lista</string>
     <string name="remover">Remover</string>
     <string name="duplicar">Duplicar</string>
+    <string name="insira_o_nome_do_item">Insira o nome do item</string>
+    <string name="preencha_o_nome_da_lista">Preencha o nome da lista</string>
 </resources>

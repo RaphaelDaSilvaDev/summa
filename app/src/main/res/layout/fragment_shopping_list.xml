@@ -35,6 +35,7 @@
             android:background="@null"
             android:inputType="text"
             android:maxLines="1"
+            android:hint="@string/preencha_o_nome_da_lista"
             android:textAppearance="@style/TextAppearance.Inter.Heading1"
             android:textColor="@color/gray100"
             android:textColorHint="@color/gray300"

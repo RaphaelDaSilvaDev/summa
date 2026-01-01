@@ -3,7 +3,6 @@ package com.omna.summa.ui.shoppingItem
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.util.query
 import com.omna.summa.data.local.mapper.toDomain
 import com.omna.summa.data.local.mapper.toEntry
 import com.omna.summa.data.repository.ShoppingItemRepository
