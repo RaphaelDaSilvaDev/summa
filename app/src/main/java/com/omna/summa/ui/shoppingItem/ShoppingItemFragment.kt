@@ -10,6 +10,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -129,6 +130,19 @@ class ShoppingItemFragment : Fragment() {
                 updateTotal(items)
 
                 itemAdapter.updateItems(items)
+
+                if(items.isEmpty()){
+                    binding.tvEmptyRecyclerView.isVisible = true
+                    val query = viewModel.searchQuery.value
+
+                    binding.tvEmptyRecyclerView.text = if(query.isEmpty()){
+                        getString(R.string.lista_vazia_adicione_itens)
+                    }else{
+                        getString(R.string.item_nao_encontrado)
+                    }
+                }else{
+                    binding.tvEmptyRecyclerView.isVisible = false
+                }
             }
         }
 

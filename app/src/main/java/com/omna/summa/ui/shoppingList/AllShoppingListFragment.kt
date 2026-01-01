@@ -10,6 +10,7 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -77,6 +78,20 @@ class AllShoppingListFragment : Fragment() {
         lifecycleScope.launch {
             viewModel.lists.collect { lists ->
                 itemAdapter.updateItems(lists)
+
+                if (lists.isEmpty()){
+                    binding.tvEmptyRecyclerView.isVisible = true
+
+                    val query = viewModel.searchQuery.value
+
+                    binding.tvEmptyRecyclerView.text = if (query.isBlank()){
+                        getString(R.string.lista_vazia_adicione_itens)
+                    }else{
+                        getString(R.string.n_o_encontramos_essa_lista)
+                    }
+                }else{
+                    binding.tvEmptyRecyclerView.isVisible = false
+                }
             }
         }
 

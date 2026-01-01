@@ -258,6 +258,20 @@
         app:layout_constraintTop_toBottomOf="@+id/clForm"
         tools:listitem="@layout/item_shopping" />
 
+    <TextView
+        android:id="@+id/tvEmptyRecyclerView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.Inter.Heading1"
+        android:textColor="@color/gray200"
+        android:visibility="gone"
+        android:paddingHorizontal="24dp"
+        app:layout_constraintBottom_toBottomOf="@+id/rvItem"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/clForm"
+        tools:text="@string/item_nao_encontrado" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clFooter"
         android:layout_width="match_parent"

@@ -27,4 +27,7 @@
     <string name="adicione_uma_data">Add Data</string>
     <string name="digite_o_item">Digite o item</string>
     <string name="pesquisar">Pesquisar</string>
+    <string name="lista_vazia_adicione_itens">Lista vazia, adicione itens!</string>
+    <string name="item_nao_encontrado">Não encontramos esse item na sua lista.</string>
+    <string name="n_o_encontramos_essa_lista">Não encontramos essa lista</string>
 </resources>

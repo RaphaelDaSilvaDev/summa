@@ -98,6 +98,20 @@
         app:layout_constraintTop_toBottomOf="@+id/llSearch"
         tools:listitem="@layout/list_shopping" />
 
+    <TextView
+        android:id="@+id/tvEmptyRecyclerView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="24dp"
+        android:textAppearance="@style/TextAppearance.Inter.Heading1"
+        android:textColor="@color/gray200"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/rvItem"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/llSearch"
+        tools:text="@string/item_nao_encontrado" />
+
     <androidx.appcompat.widget.AppCompatImageButton
         android:id="@+id/btnAdd"
         android:layout_width="48dp"
