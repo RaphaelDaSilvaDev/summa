@@ -25,4 +25,6 @@
     <string name="o_nome_da_lista_nao_pode_ser_vazio">O nome da lista não pode ser vazio</string>
     <string name="rs2_50">R$ 0,00</string>
     <string name="adicione_uma_data">Add Data</string>
+    <string name="digite_o_item">Digite o item</string>
+    <string name="pesquisar">Pesquisar</string>
 </resources>

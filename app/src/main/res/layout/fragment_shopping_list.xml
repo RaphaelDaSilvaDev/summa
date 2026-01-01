@@ -132,12 +132,12 @@
                     android:layout_width="60dp"
                     android:layout_height="match_parent"
                     android:background="@null"
-                    android:textAlignment="center"
-                    android:hint="Qtd"
-                    android:inputType="numberDecimal"
                     android:digits="0123456789.,"
+                    android:hint="Qtd"
                     android:imeOptions="actionDone"
+                    android:inputType="numberDecimal"
                     android:padding="8dp"
+                    android:textAlignment="center"
                     android:textColor="@color/gray100"
                     android:textColorHint="@color/gray300"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -159,12 +159,12 @@
                     android:layout_width="60dp"
                     android:layout_height="match_parent"
                     android:background="@null"
+                    android:cursorVisible="false"
                     android:drawableEnd="@drawable/ic_chevron_down"
                     android:drawableTint="@color/gray200"
-                    android:inputType="none"
                     android:focusable="false"
-                    android:cursorVisible="false"
                     android:imeOptions="actionDone"
+                    android:inputType="none"
                     android:padding="8dp"
                     android:text="un"
                     android:textColor="@color/gray100"
@@ -187,6 +187,60 @@
             app:layout_constraintStart_toEndOf="@+id/llQuantity"
             app:layout_constraintTop_toTopOf="@+id/llQuantity"
             app:layout_constraintVertical_bias="0.95" />
+
+        <LinearLayout
+            android:id="@+id/llSearch"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/llQuantity">
+
+            <TextView
+                android:id="@+id/tvSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:labelFor="@+id/etListName"
+                android:text="@string/pesquisar" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/clSearch"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_quantity_unity"
+                android:paddingEnd="12dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/llQuantity">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/edtSearch"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:hint="@string/digite_o_item"
+                    android:imeOptions="actionDone"
+                    android:inputType="text"
+                    android:padding="12dp"
+                    android:textColor="@color/gray100"
+                    android:textColorHint="@color/gray300"
+                    app:layout_constraintEnd_toStartOf="@+id/ibClearSearch"
+                    app:layout_constraintStart_toStartOf="parent" />
+
+                <ImageButton
+                    android:id="@+id/ibClearSearch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:src="@drawable/ic_clear"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

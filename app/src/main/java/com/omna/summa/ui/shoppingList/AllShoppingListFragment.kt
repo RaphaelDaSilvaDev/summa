@@ -10,6 +10,7 @@ import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -77,6 +78,19 @@ class AllShoppingListFragment : Fragment() {
             viewModel.lists.collect { lists ->
                 itemAdapter.updateItems(lists)
             }
+        }
+
+        binding.edtSearch.setOnFocusChangeListener{ _, hasFocus ->
+            binding.clSearch.isSelected = hasFocus
+        }
+
+        binding.edtSearch.addTextChangedListener { text ->
+            viewModel.onSearchQueryChanged(text.toString())
+        }
+
+        binding.ibClearSearch.setOnClickListener {
+            binding.edtSearch.setText("")
+            viewModel.onSearchQueryChanged("")
         }
 
         binding.btnAdd.setOnClickListener {

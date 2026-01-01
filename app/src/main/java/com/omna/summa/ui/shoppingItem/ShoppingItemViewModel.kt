@@ -3,6 +3,7 @@ package com.omna.summa.ui.shoppingItem
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.util.query
 import com.omna.summa.data.local.mapper.toDomain
 import com.omna.summa.data.local.mapper.toEntry
 import com.omna.summa.data.repository.ShoppingItemRepository
@@ -12,7 +13,10 @@ import com.omna.summa.domain.model.ShoppingList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -26,7 +30,20 @@ class ShoppingItemViewModel @Inject constructor(
     val listId: Long = savedStateHandle["listId"] ?: 0
 
     private val _items = MutableStateFlow<List<ShoppingItem>>(emptyList())
-    val items: StateFlow<List<ShoppingItem>> = _items
+
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery
+    val items: StateFlow<List<ShoppingItem>> = combine(_items, _searchQuery){ items, query ->
+        if(query.isBlank()){
+            items
+        }else{
+            items.filter { it.name.contains(query, ignoreCase = true) }
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
     init {
         loadItems()
@@ -70,5 +87,9 @@ class ShoppingItemViewModel @Inject constructor(
         viewModelScope.launch {
             listRepository.updateList(item.toEntry())
         }
+    }
+
+    fun onSearchQueryChanged(newQuery: String){
+        _searchQuery.value = newQuery
     }
 }

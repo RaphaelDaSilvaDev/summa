@@ -10,6 +10,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import androidx.core.content.ContextCompat
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -165,6 +166,19 @@ class ShoppingItemFragment : Fragment() {
                     etListName.requestFocus()
                     true
                 } else false
+            }
+
+            edtSearch.setOnFocusChangeListener{ _, hasFocus ->
+                clSearch.isSelected = hasFocus
+            }
+
+            edtSearch.addTextChangedListener { text ->
+                viewModel.onSearchQueryChanged(text.toString())
+            }
+
+            ibClearSearch.setOnClickListener {
+                edtSearch.setText("")
+                viewModel.onSearchQueryChanged("")
             }
 
             btnAdd.setOnClickListener {

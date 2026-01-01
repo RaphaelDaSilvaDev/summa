@@ -10,7 +10,10 @@ import com.omna.summa.data.repository.ShoppingListRepository
 import com.omna.summa.domain.model.ShoppingList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,7 +21,20 @@ import javax.inject.Inject
 class AllShoppingListViewModel @Inject constructor(private val repository: ShoppingListRepository) : ViewModel() {
 
     private val _lists =  MutableStateFlow<List<ShoppingList>>(emptyList())
-    val lists: StateFlow<List<ShoppingList>> = _lists
+
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery
+    val lists: StateFlow<List<ShoppingList>> = combine(_lists, _searchQuery){items, query ->
+        if(query.isBlank()){
+            items
+        }else{
+            items.filter { it.name.contains(query, ignoreCase = true) }
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+    )
 
     private val _selectList = MutableStateFlow<ShoppingListWithItems?>(null)
     val selectedList: StateFlow<ShoppingListWithItems?> = _selectList
@@ -59,5 +75,9 @@ class AllShoppingListViewModel @Inject constructor(private val repository: Shopp
         viewModelScope.launch {
             repository.deleteList(item.toEntry())
         }
+    }
+
+    fun onSearchQueryChanged(newQuery: String){
+        _searchQuery.value = newQuery
     }
 }
