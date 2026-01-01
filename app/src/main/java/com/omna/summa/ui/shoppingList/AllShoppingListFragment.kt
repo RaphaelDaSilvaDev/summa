@@ -14,7 +14,9 @@ import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -75,22 +77,24 @@ class AllShoppingListFragment : Fragment() {
             adapter = itemAdapter
         }
 
-        lifecycleScope.launch {
-            viewModel.lists.collect { lists ->
-                itemAdapter.updateItems(lists)
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.lists.collect { lists ->
+                    itemAdapter.updateItems(lists)
 
-                if (lists.isEmpty()){
-                    binding.tvEmptyRecyclerView.isVisible = true
+                    if (lists.isEmpty()){
+                        binding.tvEmptyRecyclerView.isVisible = true
 
-                    val query = viewModel.searchQuery.value
+                        val query = viewModel.searchQuery.value
 
-                    binding.tvEmptyRecyclerView.text = if (query.isBlank()){
-                        getString(R.string.lista_vazia_adicione_itens)
+                        binding.tvEmptyRecyclerView.text = if (query.isBlank()){
+                            getString(R.string.lista_vazia_adicione_itens)
+                        }else{
+                            getString(R.string.n_o_encontramos_essa_lista)
+                        }
                     }else{
-                        getString(R.string.n_o_encontramos_essa_lista)
+                        binding.tvEmptyRecyclerView.isVisible = false
                     }
-                }else{
-                    binding.tvEmptyRecyclerView.isVisible = false
                 }
             }
         }
