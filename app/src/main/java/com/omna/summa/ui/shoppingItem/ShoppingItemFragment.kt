@@ -37,6 +37,8 @@ class ShoppingItemFragment : Fragment() {
 
     private val viewModel: ShoppingItemViewModel by viewModels()
 
+    private val tempTotals = mutableMapOf<Long, Long>()
+
     val units = listOf("un", "kg", "g", "L", "ml")
 
     override fun onCreateView(
@@ -101,10 +103,11 @@ class ShoppingItemFragment : Fragment() {
         val dropdownBg = ContextCompat.getDrawable(requireContext(), R.drawable.bg_edit_text)
 
         val itemAdapter =
-            ShoppingItemAdapter(mutableListOf(), menuUnitAdapter, dropdownBg, onAmountChanged = {
-                val currentItems = viewModel.items.value
-                updateTotal(currentItems)
+            ShoppingItemAdapter(menuUnitAdapter, dropdownBg, onAmountChanged = { itemId, tempTotal ->
+                tempTotals[itemId] = tempTotal
+                updateTotalWithTemp()
             }, onItemChanged = { item ->
+                tempTotals.remove(item.id)
                 viewModel.updateItem(item)
             }, onRemoveItem = { item ->
                 viewModel.deleteItem(item)
@@ -127,9 +130,9 @@ class ShoppingItemFragment : Fragment() {
 
         lifecycleScope.launch {
             viewModel.items.collect { items ->
-                updateTotal(items)
+                updateTotal()
 
-                itemAdapter.updateItems(items)
+                itemAdapter.submitList(items)
 
                 if(items.isEmpty()){
                     binding.tvEmptyRecyclerView.isVisible = true
@@ -232,8 +235,18 @@ class ShoppingItemFragment : Fragment() {
         _binding = null
     }
 
-    private fun updateTotal(items: List<ShoppingItem>) {
-        val total = items.sumOf { it.totalPriceInCents() }
+    private fun updateTotalWithTemp(){
+        val persistedItems = viewModel.allItems.value
+
+        val total = persistedItems.sumOf { item ->
+            tempTotals[item.id] ?: item.totalPriceInCents()
+        }
+
+        binding.tvTotalGeral.text = formatCurrencyBR(total)
+    }
+
+    private fun updateTotal() {
+        val total = viewModel.allItems.value.sumOf { it.totalPriceInCents() }
 
         binding.tvTotalGeral.text = formatCurrencyBR(total)
     }

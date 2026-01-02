@@ -10,6 +10,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getString
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.omna.summa.R
@@ -21,12 +23,21 @@ import com.omna.summa.ui.converters.formatPlannedDate
 import java.time.LocalDate
 
 class AllShoppingListAdapter(
-    private val items: MutableList<ShoppingList>,
     private val onItemClick: (ShoppingList) -> Unit,
     private val onItemChanged: (ShoppingList) -> Unit,
     private val onItemDeleted: (ShoppingList) -> Unit,
     private val onDuplicateList: (ShoppingList) -> Unit
-) : RecyclerView.Adapter<AllShoppingListAdapter.ViewHolder>() {
+) : ListAdapter<ShoppingList, AllShoppingListAdapter.ViewHolder>(DIFF) {
+    companion object{
+        val DIFF = object : DiffUtil.ItemCallback<ShoppingList>(){
+            override fun areContentsTheSame(oldItem: ShoppingList, newItem: ShoppingList): Boolean =
+                oldItem == newItem
+
+            override fun areItemsTheSame(oldItem: ShoppingList, newItem: ShoppingList): Boolean =
+                oldItem.id == newItem.id
+        }
+    }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -40,20 +51,9 @@ class AllShoppingListAdapter(
         holder: ViewHolder,
         position: Int
     ) {
-        holder.bind(items[position])
+        holder.bind(getItem(position))
     }
 
-    override fun getItemCount(): Int {
-        return items.size
-    }
-
-    override fun getItemId(position: Int): Long {
-        return items[position].id
-    }
-
-    init {
-        setHasStableIds(true)
-    }
 
     inner class ViewHolder(private val binding: ListShoppingBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -153,15 +153,5 @@ class AllShoppingListAdapter(
 
                 root.setOnClickListener { onItemClick(item) }
             }
-    }
-
-    fun updateItems(newItems: List<ShoppingList>) {
-        items.clear()
-        items.addAll(newItems)
-        notifyDataSetChanged()
-    }
-
-    fun getItemByPosition(position: Int): ShoppingList{
-        return items[position]
     }
 }

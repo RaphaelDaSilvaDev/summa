@@ -16,7 +16,8 @@ import android.widget.CheckBox
 import android.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getString
-import androidx.core.widget.addTextChangedListener
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.omna.summa.R
@@ -27,14 +28,23 @@ import com.omna.summa.ui.converters.formatQuantity
 import com.omna.summa.ui.converters.parseCurrencyBRToCents
 
 class ShoppingItemAdapter(
-    private val items: MutableList<ShoppingItem>,
     private val unitAdapter: ArrayAdapter<String>,
     private val dropdownBackground: Drawable?,
-    private val onAmountChanged: () -> Unit,
+    private val onAmountChanged: (itemId: Long, tempTotalInCents: Long) -> Unit,
     private val onItemChanged: (ShoppingItem) -> Unit,
     private val onRemoveItem: (ShoppingItem) -> Unit,
     private val onItemInsert: (ShoppingItem) -> Unit
-) : RecyclerView.Adapter<ShoppingItemAdapter.ViewHolder>() {
+) : ListAdapter<ShoppingItem, ShoppingItemAdapter.ViewHolder>(DIFF) {
+    companion object{
+        val DIFF = object : DiffUtil.ItemCallback<ShoppingItem>(){
+            override fun areContentsTheSame(oldItem: ShoppingItem, newItem: ShoppingItem): Boolean =
+                oldItem == newItem
+
+            override fun areItemsTheSame(oldItem: ShoppingItem, newItem: ShoppingItem): Boolean =
+                oldItem.id == newItem.id
+        }
+    }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -48,30 +58,70 @@ class ShoppingItemAdapter(
         holder: ViewHolder,
         position: Int
     ) {
-        holder.bind(items[position])
-    }
-
-    override fun getItemCount(): Int {
-        return items.size
-    }
-
-    override fun getItemId(position: Int): Long {
-        return items[position].id
-    }
-
-    init {
-        setHasStableIds(true)
+        holder.bind(getItem(position))
     }
 
     inner class ViewHolder(private val binding: ItemShoppingBinding) :
         RecyclerView.ViewHolder(binding.root) {
-
+        private lateinit var currentItem: ShoppingItem
         private var isUpdating = false
 
+        private val priceWatcher = object : TextWatcher {
+
+            override fun afterTextChanged(s: Editable?) {
+                if (isUpdating || !::currentItem.isInitialized) return
+                isUpdating = true
+
+                val clean = s
+                    ?.toString()
+                    ?.replace("[^0-9]".toRegex(), "")
+                    ?: ""
+
+                val cents = clean.toLongOrNull() ?: 0L
+
+                val formatted = formatCurrencyBR(cents)
+
+                if (formatted != binding.etValor.text.toString()) {
+                    binding.etValor.setText(formatted)
+                    binding.etValor.setSelection(formatted.length)
+                }
+
+                val updated = currentItem.copy(unitPrice = cents)
+
+                binding.tvTotal.text = formatCurrencyBR(updated.totalPriceInCents())
+
+                onAmountChanged(updated.id, updated.totalPriceInCents())
+
+                isUpdating = false
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        }
+
+        private val quantityWatcher = object : TextWatcher{
+            override fun afterTextChanged(s: Editable?) {
+                if(isUpdating || !::currentItem.isInitialized) return
+
+                val quantity = s?.toString()?.replace(",", ".")?.toDoubleOrNull() ?: 0.0
+
+                val updated = currentItem.copy(quantity = quantity)
+                binding.tvTotal.text = formatCurrencyBR(updated.totalPriceInCents())
+
+                onAmountChanged(updated.id, updated.totalPriceInCents())
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+        }
         @SuppressLint("ClickableViewAccessibility")
         fun bind(item: ShoppingItem) =
             with(binding) {
+                currentItem = item
+
                 chkIsDone.setOnCheckedChangeListener(null)
+                etValor.removeTextChangedListener(priceWatcher)
+                edtAmount.removeTextChangedListener(quantityWatcher)
 
                 etName.setText(item.name)
                 edtAmount.setText(formatQuantity(item.quantity))
@@ -102,8 +152,6 @@ class ShoppingItemAdapter(
                             unitPrice = parseCurrencyBRToCents(etValor.text.toString())
                         )
 
-                        edtAmount.setText(formatQuantity(updatedItem.quantity))
-
                         onItemChanged(updatedItem)
                     }
                 }
@@ -112,11 +160,9 @@ class ShoppingItemAdapter(
                 edtAmount.onFocusChangeListener = focusListener
                 etValor.onFocusChangeListener = focusListener
 
-                edtAmount.addTextChangedListener { text ->
-                    item.quantity = text.toString().replace(",", ".").toDoubleOrNull() ?: 0.0
-                    tvTotal.text = formatCurrencyBR(item.totalPriceInCents())
-                    onAmountChanged()
-                }
+                edtAmount.addTextChangedListener(quantityWatcher)
+                etValor.addTextChangedListener(priceWatcher)
+
 
                 edtAmount.setOnEditorActionListener { _, actionId, _ ->
                     if(actionId == EditorInfo.IME_ACTION_NEXT){
@@ -125,41 +171,6 @@ class ShoppingItemAdapter(
                         true
                     }else false
                 }
-
-                val currencyWatcher = object : TextWatcher {
-
-                    override fun afterTextChanged(s: Editable?) {
-                        if (isUpdating) return
-                        isUpdating = true
-
-                        val clean = s
-                            ?.toString()
-                            ?.replace("[^0-9]".toRegex(), "")
-                            ?: ""
-
-                        val cents = clean.toLongOrNull() ?: 0L
-
-                        val formatted = formatCurrencyBR(cents)
-
-                        if (formatted != s.toString()) {
-                            etValor.setText(formatted)
-                            etValor.setSelection(formatted.length)
-                        }
-
-                        item.unitPrice = cents
-                        tvTotal.text = formatCurrencyBR(item.totalPriceInCents())
-                        onAmountChanged()
-
-                        isUpdating = false
-                    }
-
-                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-                }
-
-                etValor.removeTextChangedListener(currencyWatcher)
-                etValor.setText(formatCurrencyBR(item.unitPrice ?: 0L))
-                etValor.addTextChangedListener(currencyWatcher)
 
                 etValor.setOnEditorActionListener { v, actionId, _ ->
                     if(actionId == EditorInfo.IME_ACTION_DONE){
@@ -174,9 +185,7 @@ class ShoppingItemAdapter(
 
                 chkIsDone.setOnClickListener {
                     val isChecked = (it as CheckBox).isChecked
-                    if(isChecked != item.isDone){
-                        onItemChanged(item.copy(isDone = isChecked))
-                    }
+                    onItemChanged(item.copy(isDone = isChecked))
                 }
 
                 ibMenu.setOnClickListener { view ->
@@ -217,18 +226,10 @@ class ShoppingItemAdapter(
                     }
 
                     setOnItemClickListener { _, _, position, _ ->
-                        item.unit = unitAdapter.getItem(position).orEmpty()
-                        onItemChanged(item)
+                        val newItem = item.copy(unit = unitAdapter.getItem(position).orEmpty() )
+                        onItemChanged(newItem)
                     }
                 }
             }
-    }
-
-    fun getItemByPositon(position: Int): ShoppingItem = items[position]
-
-    fun updateItems(newItems: List<ShoppingItem>) {
-        items.clear()
-        items.addAll(newItems)
-        notifyDataSetChanged()
     }
 }

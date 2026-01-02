@@ -32,6 +32,7 @@ class ShoppingItemViewModel @Inject constructor(
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
+    val allItems: StateFlow<List<ShoppingItem>> = _items
     val items: StateFlow<List<ShoppingItem>> = combine(_items, _searchQuery){ items, query ->
         if(query.isBlank()){
             items

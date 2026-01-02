@@ -2,11 +2,11 @@ package com.omna.summa.domain.model
 
 data class ShoppingItem(
     val id: Long = 0,
-    var name: String,
-    var quantity: Double = 0.0,
-    var unit: String,
-    var unitPrice: Long? = null,
-    var isDone: Boolean = false
+    val name: String,
+    val quantity: Double = 0.0,
+    val unit: String,
+    val unitPrice: Long? = null,
+    val isDone: Boolean = false
 ){
     fun totalPriceInCents(): Long {
         return (quantity * (unitPrice ?: 0L)).toLong()

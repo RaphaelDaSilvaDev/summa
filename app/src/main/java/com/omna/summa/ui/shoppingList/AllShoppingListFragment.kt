@@ -51,7 +51,7 @@ class AllShoppingListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val itemAdapter = AllShoppingListAdapter(mutableListOf(), onItemClick = { list ->
+        val itemAdapter = AllShoppingListAdapter(onItemClick = { list ->
             viewModel.selectList(list.id)
 
             val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -79,7 +79,7 @@ class AllShoppingListFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
                 viewModel.lists.collect { lists ->
-                    itemAdapter.updateItems(lists)
+                    itemAdapter.submitList(lists)
 
                     if (lists.isEmpty()){
                         binding.tvEmptyRecyclerView.isVisible = true
