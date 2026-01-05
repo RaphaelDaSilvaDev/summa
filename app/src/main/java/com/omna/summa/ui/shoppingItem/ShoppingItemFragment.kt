@@ -41,7 +41,7 @@ class ShoppingItemFragment : Fragment() {
 
     private val tempTotals = mutableMapOf<Long, Long>()
 
-    val units = listOf("un", "kg", "g", "L", "ml")
+    val units = listOf("un", "kg", "L")
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

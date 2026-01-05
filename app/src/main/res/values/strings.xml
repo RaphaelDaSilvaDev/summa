@@ -34,4 +34,5 @@
     <string name="duplicar">Duplicar</string>
     <string name="insira_o_nome_do_item">Insira o nome do item</string>
     <string name="preencha_o_nome_da_lista">Preencha o nome da lista</string>
+    <string name="o_nome_do_item_n_o_pode_ser_vazio">O nome do item não pode ser vazio.</string>
 </resources>

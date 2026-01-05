@@ -13,6 +13,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import android.widget.PopupMenu
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getString
 import androidx.recyclerview.widget.DiffUtil
@@ -143,6 +144,7 @@ class ShoppingItemAdapter(
         @SuppressLint("ClickableViewAccessibility")
         fun bind(item: ShoppingItem) =
             with(binding) {
+                etName.error = null
                 currentItem = item
 
                 chkIsDone.setOnCheckedChangeListener(null)
@@ -159,23 +161,33 @@ class ShoppingItemAdapter(
                 edtAmount.setSelectAllOnFocus(true)
                 etValor.setSelectAllOnFocus(true)
 
-                val focusListener = View.OnFocusChangeListener { view, hasFocus ->
+                val simpleFocusListener = View.OnFocusChangeListener { view, hasFocus ->
                     if(view.id == edtAmount.id || view.id == slcUnit.id){
                         clQuantity.isSelected = hasFocus
                     }
 
                     if (!hasFocus) {
-
-                        if (etName.text.toString().isEmpty()){
-                            etName.error = itemView.context.getString(R.string.nome_da_lista)
-                        }
                         persistIfNeeded()
                     }
                 }
 
-                etName.onFocusChangeListener = focusListener
-                edtAmount.onFocusChangeListener = focusListener
-                etValor.onFocusChangeListener = focusListener
+                edtAmount.onFocusChangeListener = simpleFocusListener
+                etValor.onFocusChangeListener = simpleFocusListener
+
+                etName.setOnFocusChangeListener { _, hasFocus ->
+                    if(!hasFocus){
+                        val name = etName.text.toString().trim()
+
+                        if (name.isEmpty()){
+                            etName.setText(item.name)
+                            Toast.makeText(itemView.context,
+                                itemView.context.getString(R.string.o_nome_do_item_n_o_pode_ser_vazio), Toast.LENGTH_SHORT).show()
+                        }else{
+                            etName.error = null
+                            persistIfNeeded()
+                        }
+                    }
+                }
 
                 edtAmount.addTextChangedListener(quantityWatcher)
                 etValor.addTextChangedListener(priceWatcher)
@@ -209,8 +221,8 @@ class ShoppingItemAdapter(
                 }
 
                 chkIsDone.setOnCheckedChangeListener { _, isChecked ->
-                        persistIfNeeded()
-                        onItemChanged(currentItem.copy(isDone = isChecked))
+                    persistIfNeeded()
+                    onItemChanged(currentItem.copy(isDone = isChecked))
                 }
 
                 ibMenu.setOnClickListener { view ->
