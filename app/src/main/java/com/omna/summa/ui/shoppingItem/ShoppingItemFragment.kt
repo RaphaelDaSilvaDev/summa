@@ -13,7 +13,9 @@ import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -54,49 +56,6 @@ class ShoppingItemFragment : Fragment() {
 
         val id = args.listId
 
-        lifecycleScope.launch {
-            viewModel.getListById(id){ item ->
-                binding.tvDate.setOnClickListener {
-                    showDatePicker(it.context, initialDate = item.plannedAt ?: LocalDate.now()){ returnedDate ->
-                        binding.tvDate.text = formatPlannedDate(returnedDate)
-                        val updatedItem = item.copy(
-                            plannedAt = returnedDate
-                        )
-
-                        viewModel.updateList(updatedItem)
-                    }
-                }
-
-                if(item.name.isNotEmpty()){
-                    binding.etPageName.setText(item.name)
-                }else{
-                    binding.etPageName.setHint(getString(R.string.lista_de_compras))
-                }
-
-                if(item.plannedAt != null){
-                    binding.tvDate.text = formatPlannedDate(item.plannedAt!!)
-                }else{
-                    binding.tvDate.text = getString(R.string.adicione_uma_data)
-                }
-            }
-        }
-
-        binding.etPageName.setOnFocusChangeListener {_, hasFocus ->
-            if(!hasFocus){
-                if(binding.etPageName.text.isNullOrEmpty()){
-                    binding.etPageName.error =
-                        getString(R.string.o_nome_da_lista_nao_pode_ser_vazio)
-                    return@setOnFocusChangeListener
-                }
-
-                viewModel.getListById(id) { item ->
-                    val updatedItem = item.copy(name = binding.etPageName.text.toString().trim())
-                    viewModel.updateList(updatedItem)
-                }
-
-            }
-        }
-
         val menuUnitAdapter =
             ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, units)
 
@@ -120,32 +79,81 @@ class ShoppingItemFragment : Fragment() {
             adapter = itemAdapter
         }
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                viewModel.getListById(id){ item ->
+                    binding.tvDate.setOnClickListener {
+                        showDatePicker(it.context, initialDate = item.plannedAt ?: LocalDate.now()){ returnedDate ->
+                            binding.tvDate.text = formatPlannedDate(returnedDate)
+                            val updatedItem = item.copy(
+                                plannedAt = returnedDate
+                            )
+
+                            viewModel.updateList(updatedItem)
+                        }
+                    }
+
+                    if(item.name.isNotEmpty()){
+                        binding.etPageName.setText(item.name)
+                    }else{
+                        binding.etPageName.setHint(getString(R.string.lista_de_compras))
+                    }
+
+                    if(item.plannedAt != null){
+                        binding.tvDate.text = formatPlannedDate(item.plannedAt!!)
+                    }else{
+                        binding.tvDate.text = getString(R.string.adicione_uma_data)
+                    }
+                }
+
+                viewModel.items.collect { items ->
+                    updateTotal()
+
+                    val state = binding.rvItem.layoutManager?.onSaveInstanceState()
+
+                    binding.rvItem.suppressLayout(true)
+                    itemAdapter.submitList(items){
+                        binding.rvItem.suppressLayout(false)
+                        binding.rvItem.layoutManager?.onRestoreInstanceState(state)
+                    }
+
+                    if(items.isEmpty()){
+                        binding.tvEmptyRecyclerView.isVisible = true
+                        val query = viewModel.searchQuery.value
+
+                        binding.tvEmptyRecyclerView.text = if(query.isEmpty()){
+                            getString(R.string.lista_vazia_adicione_itens)
+                        }else{
+                            getString(R.string.item_nao_encontrado)
+                        }
+                    }else{
+                        binding.tvEmptyRecyclerView.isVisible = false
+                    }
+                }
+            }
+        }
+
+        binding.etPageName.setOnFocusChangeListener {_, hasFocus ->
+            if(!hasFocus){
+                if(binding.etPageName.text.isNullOrEmpty()){
+                    binding.etPageName.error =
+                        getString(R.string.o_nome_da_lista_nao_pode_ser_vazio)
+                    return@setOnFocusChangeListener
+                }
+
+                viewModel.getListById(id) { item ->
+                    val updatedItem = item.copy(name = binding.etPageName.text.toString().trim())
+                    viewModel.updateList(updatedItem)
+                }
+
+            }
+        }
+
         with(binding.slcUnit) {
             setAdapter(menuUnitAdapter)
             setOnClickListener {
                 setDropDownBackgroundDrawable(dropdownBg)
                 showDropDown()
-            }
-        }
-
-        lifecycleScope.launch {
-            viewModel.items.collect { items ->
-                updateTotal()
-
-                itemAdapter.submitList(items)
-
-                if(items.isEmpty()){
-                    binding.tvEmptyRecyclerView.isVisible = true
-                    val query = viewModel.searchQuery.value
-
-                    binding.tvEmptyRecyclerView.text = if(query.isEmpty()){
-                        getString(R.string.lista_vazia_adicione_itens)
-                    }else{
-                        getString(R.string.item_nao_encontrado)
-                    }
-                }else{
-                    binding.tvEmptyRecyclerView.isVisible = false
-                }
             }
         }
 

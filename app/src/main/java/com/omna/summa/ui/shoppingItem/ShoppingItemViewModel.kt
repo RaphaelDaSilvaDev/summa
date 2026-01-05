@@ -58,7 +58,7 @@ class ShoppingItemViewModel @Inject constructor(
     }
 
     fun updateItem(item: ShoppingItem){
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             repository.updateItem(item.toEntry(listId))
         }
     }

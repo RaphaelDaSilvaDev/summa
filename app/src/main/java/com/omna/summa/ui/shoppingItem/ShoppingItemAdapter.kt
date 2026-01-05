@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
-import android.widget.CheckBox
 import android.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getString
@@ -45,6 +44,10 @@ class ShoppingItemAdapter(
         }
     }
 
+    init {
+        setHasStableIds(true)
+    }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -59,6 +62,13 @@ class ShoppingItemAdapter(
         position: Int
     ) {
         holder.bind(getItem(position))
+    }
+
+    override fun getItemId(position: Int): Long = getItem(position).id
+
+    override fun onViewRecycled(holder: ViewHolder) {
+        holder.persistIfNeeded()
+        super.onViewRecycled(holder)
     }
 
     inner class ViewHolder(private val binding: ItemShoppingBinding) :
@@ -114,6 +124,22 @@ class ShoppingItemAdapter(
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         }
+
+        internal fun persistIfNeeded(){
+            if(!::currentItem.isInitialized) return
+
+            val updated = currentItem.copy(
+                name = if(binding.etName.text.toString().isEmpty()) currentItem.name else binding.etName.text.toString().trim(),
+                quantity = binding.edtAmount.text.toString().replace(",",".").toDoubleOrNull() ?: 0.0,
+                unit = binding.slcUnit.text.toString(),
+                unitPrice = parseCurrencyBRToCents(binding.etValor.text.toString())
+            )
+
+            if (updated != currentItem){
+                currentItem = updated
+                onItemChanged(updated)
+            }
+        }
         @SuppressLint("ClickableViewAccessibility")
         fun bind(item: ShoppingItem) =
             with(binding) {
@@ -142,17 +168,8 @@ class ShoppingItemAdapter(
 
                         if (etName.text.toString().isEmpty()){
                             etName.error = itemView.context.getString(R.string.nome_da_lista)
-                            return@OnFocusChangeListener
                         }
-
-                        val updatedItem = item.copy(
-                            name = etName.text.toString().trim(),
-                            quantity = edtAmount.text.toString().replace(",", ".").toDoubleOrNull() ?: 0.0,
-                            unit = slcUnit.text.toString(),
-                            unitPrice = parseCurrencyBRToCents(etValor.text.toString())
-                        )
-
-                        onItemChanged(updatedItem)
+                        persistIfNeeded()
                     }
                 }
 
@@ -163,6 +180,14 @@ class ShoppingItemAdapter(
                 edtAmount.addTextChangedListener(quantityWatcher)
                 etValor.addTextChangedListener(priceWatcher)
 
+                etName.setOnEditorActionListener { v, actionId, _ ->
+                    if(actionId == EditorInfo.IME_ACTION_DONE){
+                        etName.clearFocus()
+                        val imm = v.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.hideSoftInputFromWindow(v.windowToken, 0)
+                        true
+                    }else false
+                }
 
                 edtAmount.setOnEditorActionListener { _, actionId, _ ->
                     if(actionId == EditorInfo.IME_ACTION_NEXT){
@@ -183,13 +208,13 @@ class ShoppingItemAdapter(
                     }else false
                 }
 
-                chkIsDone.setOnClickListener {
-                    val isChecked = (it as CheckBox).isChecked
-                    onItemChanged(item.copy(isDone = isChecked))
+                chkIsDone.setOnCheckedChangeListener { _, isChecked ->
+                        persistIfNeeded()
+                        onItemChanged(currentItem.copy(isDone = isChecked))
                 }
 
                 ibMenu.setOnClickListener { view ->
-                    val popup = PopupMenu(view.context, ibMenu, Gravity.RIGHT, 0, R.style.CustomPopupMenu)
+                    val popup = PopupMenu(view.context, ibMenu, Gravity.END, 0, R.style.CustomPopupMenu)
                     popup.menuInflater.inflate(R.menu.item_menu, popup.menu)
 
                     popup.setOnMenuItemClickListener { menuItem ->
@@ -226,8 +251,8 @@ class ShoppingItemAdapter(
                     }
 
                     setOnItemClickListener { _, _, position, _ ->
-                        val newItem = item.copy(unit = unitAdapter.getItem(position).orEmpty() )
-                        onItemChanged(newItem)
+                        persistIfNeeded()
+                        onItemChanged(currentItem.copy(unit = unitAdapter.getItem(position).orEmpty()))
                     }
                 }
             }
