@@ -3,6 +3,7 @@ package com.omna.summa.ui.shoppingItem
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.util.query
 import com.omna.summa.data.local.mapper.toDomain
 import com.omna.summa.data.local.mapper.toEntry
 import com.omna.summa.data.repository.ShoppingItemRepository
@@ -15,6 +16,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,6 +37,8 @@ class ShoppingItemViewModel @Inject constructor(
     private val _items = MutableStateFlow<List<ShoppingItem>>(emptyList())
 
     private val _searchQuery = MutableStateFlow("")
+
+    private val _searchInputItemName = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery
     val allItems: StateFlow<List<ShoppingItem>> = _items
     val items: StateFlow<List<ShoppingItem>> = combine(_items, _searchQuery){ items, query ->
@@ -44,6 +52,21 @@ class ShoppingItemViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
+
+    val suggestion: StateFlow<List<String>> = _searchInputItemName
+        .flatMapLatest { query ->
+            if(query.isBlank()) {
+                flowOf(emptyList())
+            }
+            else {
+                repository.getItemsLikeName(query).map { entities -> entities.map { "${it.name} (${it.unit})" } }
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(1000), emptyList())
+
+    fun onQueryChanged(newQuery: String){
+        _searchInputItemName.value = newQuery
+    }
 
     init {
         loadItems()

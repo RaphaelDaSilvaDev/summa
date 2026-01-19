@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.omna.summa.data.local.entity.ShoppingItemEntity
+import com.omna.summa.domain.model.ShoppingItem
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -29,4 +30,7 @@ interface ShoppingItemDao {
 
     @Query("SELECT * FROM shopping_items WHERE id = :id")
     fun getItemById(id: Long): ShoppingItemEntity?
+
+    @Query("SELECT DISTINCT * FROM shopping_items WHERE name LIKE :query || '%' LIMIT 10")
+    fun getItemsLikeName(query: String): Flow<List<ShoppingItemEntity>>
 }

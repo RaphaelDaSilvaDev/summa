@@ -2,6 +2,7 @@ package com.omna.summa.data.repository
 
 import com.omna.summa.data.local.dao.ShoppingItemDao
 import com.omna.summa.data.local.entity.ShoppingItemEntity
+import com.omna.summa.domain.model.ShoppingItem
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -19,4 +20,6 @@ class ShoppingItemRepository @Inject constructor(
     suspend fun insetItem(item: ShoppingItemEntity): Long = dao.insertItem(item)
 
     suspend fun deleteItem(item: ShoppingItemEntity) = dao.deleteItem(item)
+
+    fun getItemsLikeName(query: String): Flow<List<ShoppingItemEntity>> = dao.getItemsLikeName(query);
 }

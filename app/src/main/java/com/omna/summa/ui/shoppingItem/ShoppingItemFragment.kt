@@ -61,6 +61,8 @@ class ShoppingItemFragment : Fragment() {
 
         val dropdownBg = ContextCompat.getDrawable(requireContext(), R.drawable.bg_edit_text)
 
+        val itemNameAdapter = ArrayAdapter<String>(requireContext(), android.R.layout.simple_dropdown_item_1line, mutableListOf<String>())
+
         val itemAdapter =
             ShoppingItemAdapter(menuUnitAdapter, dropdownBg, onAmountChanged = { itemId, tempTotal ->
                 tempTotals[itemId] = tempTotal
@@ -133,6 +135,14 @@ class ShoppingItemFragment : Fragment() {
             }
         }
 
+        lifecycleScope.launch {
+            viewModel.suggestion.collect { list ->
+                itemNameAdapter.clear()
+                itemNameAdapter.addAll(list)
+                itemNameAdapter.notifyDataSetChanged()
+            }
+        }
+
         binding.etPageName.setOnFocusChangeListener {_, hasFocus ->
             if(!hasFocus){
                 if(binding.etPageName.text.isNullOrEmpty()){
@@ -158,9 +168,29 @@ class ShoppingItemFragment : Fragment() {
         }
 
         with(binding){
+            etListName.setAdapter(itemNameAdapter)
             etListName.requestFocus()
             val imm = view.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.showSoftInput(etListName, InputMethodManager.SHOW_IMPLICIT)
+
+            etListName.addTextChangedListener { text ->
+                viewModel.onQueryChanged(text.toString())
+            }
+
+            etListName.setOnItemClickListener { parent, view, position, id ->
+                val selectedItem = parent.getItemAtPosition(position) as String
+
+                val name = selectedItem.substringBefore("(").trim()
+                val unit = selectedItem.substringAfter("(", "").substringBefore(")", "").trim()
+
+                binding.etListName.setText(name)
+
+                val unitPosition = (0 until menuUnitAdapter.count).firstOrNull(){
+                    menuUnitAdapter.getItem(it) == unit
+                }
+
+                binding.slcUnit.setText(menuUnitAdapter.getItem(unitPosition ?: 0), false)
+            }
 
             etListName.setOnEditorActionListener { _, actionId, _ ->
                 if (actionId == EditorInfo.IME_ACTION_NEXT) {

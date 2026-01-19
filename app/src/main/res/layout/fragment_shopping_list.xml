@@ -87,21 +87,32 @@
                 android:labelFor="@+id/etListName"
                 android:text="@string/item" />
 
-            <EditText
-                android:id="@+id/etListName"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="8dp"
-                android:background="@drawable/bg_edit_text"
-                android:inputType="text"
-                android:textColor="@color/gray100"
-                android:textColorHint="@color/gray300"
-                android:imeOptions="actionNext"
-                android:hint="@string/nome_item"
-                android:padding="12dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tvItem" />
+                app:hintEnabled="false"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+                >
+
+                <AutoCompleteTextView
+                    android:id="@+id/etListName"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/bg_edit_text"
+                    android:inputType="text"
+                    android:textColor="@color/gray100"
+                    android:textColorHint="@color/gray300"
+                    android:hint="@string/nome_item"
+                    android:imeOptions="actionNext"
+                    android:padding="12dp"
+                    android:completionThreshold="1"
+                    android:popupBackground="@color/gray400"
+                    android:dropDownSelector="@color/gray300"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvItem" />
+            </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
         <LinearLayout
