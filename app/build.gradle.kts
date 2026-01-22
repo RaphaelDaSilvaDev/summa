@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.google.services)
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
     id("androidx.navigation.safeargs.kotlin")
@@ -57,6 +58,12 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     implementation(libs.javax.inject)
     implementation(libs.dagger.hilt)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.google.billing)
 
     ksp(libs.androidx.room.compiler)
     ksp(libs.dagger.compiler)

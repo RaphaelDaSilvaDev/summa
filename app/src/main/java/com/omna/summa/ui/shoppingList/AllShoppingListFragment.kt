@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
@@ -19,11 +20,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.omna.summa.R
+import com.omna.summa.data.remote.BillingEvent
+import com.omna.summa.data.remote.BillingManager
 import com.omna.summa.databinding.DialogAddListBinding
 import com.omna.summa.databinding.FragmentAllShoppingListBinding
 import com.omna.summa.domain.model.ShoppingList
+import com.omna.summa.ui.MainViewModel
 import com.omna.summa.ui.components.showDatePicker
 import com.omna.summa.ui.converters.formatPlannedDate
+import com.omna.summa.ui.pro.ProDialog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -34,6 +39,11 @@ class AllShoppingListFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: AllShoppingListViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels()
+
+    lateinit var billingManager: BillingManager
+
+    var proDialogShown = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,6 +60,29 @@ class AllShoppingListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        billingManager = BillingManager(requireContext()) {event ->
+            when(event){
+                is BillingEvent.PurchaseConfirmed ->
+                    mainViewModel.onPurchaseConfirmed(event.purchase)
+
+                is BillingEvent.PurchaseError ->
+                    Toast.makeText(requireContext(), event.message, Toast.LENGTH_SHORT).show()
+            }
+        }
+
+        billingManager.startConnection()
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED){
+                mainViewModel.isPro.collect { isPro ->
+                    if(!isPro && !proDialogShown){
+                        showProDialog()
+                        proDialogShown = true
+                    }
+                }
+            }
+        }
 
         val itemAdapter = AllShoppingListAdapter(onItemClick = { list ->
             viewModel.selectList(list.id)
@@ -185,5 +218,19 @@ class AllShoppingListFragment : Fragment() {
         )
 
         dialog.show()
+    }
+
+    private fun showProDialog(){
+        if (parentFragmentManager.findFragmentByTag("ProDialog") == null){
+            ProDialog(
+                onSubscribeClick = {
+                    startProPurchase()
+                }
+            ).show(parentFragmentManager, "ProDialog")
+        }
+    }
+
+    private fun startProPurchase(){
+        billingManager.launchProSubscription(requireActivity())
     }
 }

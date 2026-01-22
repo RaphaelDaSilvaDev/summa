@@ -2,14 +2,16 @@ package com.omna.summa
 
 import android.app.Application
 import androidx.room.Room
-import com.omna.summa.data.local.database.AppDatabase
 import com.omna.summa.data.local.dao.ShoppingItemDao
 import com.omna.summa.data.local.dao.ShoppingListDao
+import com.omna.summa.data.local.dao.UserDao
+import com.omna.summa.data.local.database.AppDatabase
 import com.omna.summa.data.local.database.migrations.MIGRATION_1_2
 import com.omna.summa.data.local.database.migrations.MIGRATION_2_3
 import com.omna.summa.data.local.database.migrations.MIGRATION_3_4
 import com.omna.summa.data.repository.ShoppingItemRepository
 import com.omna.summa.data.repository.ShoppingListRepository
+import com.omna.summa.data.repository.UserRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,4 +45,11 @@ class AppModule {
     @Provides
     @Singleton
     fun provideShoppingItemRepository(dao: ShoppingItemDao) = ShoppingItemRepository(dao)
+
+    @Provides
+    fun provideUserDao(db: AppDatabase) = db.userDao()
+
+    @Provides
+    @Singleton
+    fun provideUserRepository(dao: UserDao) = UserRepository(dao)
 }
